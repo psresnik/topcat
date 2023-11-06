@@ -1,4 +1,5 @@
 
+<div id="toc"/>
 # Topic-Oriented Protocol for Content Analysis of Text (TOPCAT)
 
 <!-- To generate table of contents:
@@ -10,6 +11,27 @@
 
 
 
+
+*   [Citation](#citation) 
+
+*   [Overview](#overview)
+
+*   [The software](#software)
+	-	[Installing MALLET](#mallet)
+	-	[Installing the TOPCAT software](#installing)
+	-   [Parameters you'll need to edit](#parameters-edit)
+	-   [Parameters you shouldn't need to edit](#parameters-noedit)
+	-   [Running the driver](#driver)
+
+*   [The human process](#human)
+	-	[Selecting a model as the starting point for human curation](#model-selection)
+	-	[Curating the model to build a coding scheme](#curating)
+	-	[Obtaining representative documents ("verbatims") for a code](#verbatims)
+	-	[Coding the dataset](#coding)
+
+*	[Guidance on topic model granularity](#granularity)
+
+
 <div id="citation"/>
 ## Citation
 
@@ -17,6 +39,9 @@ If you use TOPCAT, kindly make sure to cite the following in any reports, presen
 
 * Stub for citation
 
+[Return to top](#toc)
+
+<div id="overview"/>
 ## Overview
 
 Qualitative content analysis (QCA) includes a body of techniques that researchers use in order to gain an understanding of the content in bodies of text. These techniques are applied across a wide variety of use cases, including, for example, the analysis of open-ended survey responses, social media posts, or online reviews. A widely acknowledged problem with QCA, however, is that its methods are extremely labor intensive. For example, open-ended text responses can be an incredibly valuable source of insight in survey research, providing more nuance than traditional questions and revealing categories of response that were not originally expected, but survey researchers frequently avoid open-ends because the analysis represents too great an investment of resources. And when dealing with large quantities of text data, traditional QCA on the full dataset is simply out of the question.
@@ -39,50 +64,82 @@ TOPCAT is a (still-evolving) software-enabled process for combining the positive
 
 * **TOPCAT is extensible.** The human curation protocol requires only a topic-word distribution and a document-topic distribution (the standard outputs of "vanilla" topic modeling using LDA), either as CSV or .npy files. These should also be straightforward to obtain from other models such as the [Structural Topic Model](https://www.structuraltopicmodel.com/) or [short text topic models](https://stackoverflow.com/questions/62175452/topic-modeling-on-short-texts-python). 
 
+[Return to top](#toc)
 
 
-## Installing MALLET
+
+<div id="software"/>
+## The software
+
+
+<div id="mallet"/>
+### Installing MALLET
 
 Follow the directions at Shawn Graham, Scott Weingart, and Ian Milligan, "Getting Started with Topic Modeling and MALLET," Programming Historian 1 (2012), [https://doi.org/10.46430/phen0017](https://doi.org/10.46430/phen0017).
 
-## Installing the TOPCAT software
+[Return to top](#toc)
 
-Right now TOP{CAT is driven by a shell script (see below) but this will be replaced with a driver program in Python.
+<div id="installing"/>
+### Installing the TOPCAT software
 
-Stub for:
+ 
+* Installing the environment
+	*  If you have `conda` already installed, you should be good to go. Skip this step.
+	*  If not, we recommend that you install [miniconda](https://docs.conda.io/projects/miniconda/en/latest/index.html#quick-command-line-install) unless for other reasons you'd prefer to do a full [conda installation](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html)
 
-* Installing Python
-* Installing the TOPCAT code
+* Installing TOPCAT
+	* Do a `git clone` for this TOPCAT package
+
+* Installing necessary packages
+	* For reference, see the conda documentation on [Creating an environment from an environment.yml file](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file)
+	* At the moment, we have two separate conda environments that need to be installed. These will eventually be combined into just one. 
+		* The `topics` package:
+			* Edit the `prefix` variable at the end of [code/topics.yml](code/topics.yml) so that it points to wherever you want the `topics` environment to live
+			* Excecute `conda env create -f code/topics.yml`
+
+		* The `topic_curation` package:
+			* Edit the `prefix` variable at the end of [code/topic_curation.yml](code/topic_curation.yml) so that it points to wherever you want the `topic_curation` environment to live
+			* Excecute `conda env create -f code/topic_curation.yml`	
+
+
+[Return to top](#toc)
 
 
 
-## Steps for QCA using TOPCAT
-
-As noted above, the main work in running TOPCAT software is currently driven by a shell script. (And it's `csh`, not `bash`, because I'm seriously old school.) Ultimately this will be rewritten as a python program that reads a `config.ini` configuration file, but for now parameters for the runs are established using environment variable assignments at the top of the script.  
-
+<div id="parameters-edit"/>
 ### Parameters you'll need to edit
 
-Here's a description of the variables you'll need to localize and what they are for.
+Right now TOPCAT is driven by the `drivers.csh` shell script in the `code/src` directory. (It's `csh`, not `bash`, because I'm seriously old school.) Ultimately this will be rewritten as a python program that reads a `config.ini` configuration file, but for now parameters for the runs are established using environment variable assignments at the top of the script. That means you'll want a separate copy of the script for each dataset you analyze.
+
+Here's a description of the variables you'll need to localize/customize and what they are for.
+
+__Installation variables__
+
+|Variable|Description|
+|-----------|-----------|
+|MALLETDIR|          Installed directory for MALLET (contains the MALLET `LICENSE` file)|
+|TOPCATDIR|			 Directory with the TOPCAT code (contains `driver.csh` and `src/` subdirectory)
+|PREPROC|            Full path to this package's preprocessing script, e.g. `preprocessing_en.py` |
+|RUNMALLET|          Full path to this package Mallet driver, i.e. `run_mallet.py` |
+
+__Analysis-specific variables__
 
 
 |Variable|Description|
 |-----------|-----------|
-|MALLETDIR|          Installed directory for MALLET (= the directory containing its LICENSE file)|
-|PREPROC|            Full path to this package's preprocessing.py |
-|RUNMALLET|          Full path to this package's run_mallet.py |
 |ROOTDIR|            Your main directory for analysis of this specific dataset|
 |CSV|                Full path to the input CSV file containing the documents|
 |TEXTCOL|            Column number in the CSV file containing the documents (first column is numbered 0, not 1!) |
-|MODELNAME|          Name to use for the model|
-|DATADIR|            Directory to create that will contain topic modeling output|
-|OUTDIR|             Directory to create that will contain the final output files to be used during human curation|
+|MODELNAME|          Name to use for the models|
+|DATADIR|            Directory software will create to contain topic modeling output|
+|OUTDIR|             Directory software will create to contain the files to be used during human curation|
+|GRANULARITIES|		 List of topic model sizes to try for potential starting-point models|
 
-In addition, the `FOREACH $NUMTOPICS` loop in the driver script iterates through several (typically three to five) choices of topic model size. This value is typically denoted K in the topic modeling literature. See the _Guidance on Topic Model Granularity_ discussion below for recommendations about what values to use, which depends on the dataset.
+With regard to `GRANULARITIES`, the driver script iterates through several (typically three to five) choices of topic model size. This value is typically denoted K in the topic modeling literature. See the _Guidance on Topic Model Granularity_ discussion below for recommendations about what values to use, which depends on the dataset.  Note that the `csh` syntax is a little persnickety so when you edit that veriable, make sure you only change the numbers, not the parentheses or single-quotes.
 
-|Example|
-|---|
-|`foreach NUMTOPICS ( 50 70 100 )`|
 
+
+<div id="parameters-noedit"/>
 ### Parameters you shouldn't need to edit
 
 Finally, here's an explanation of some other variables that you shouldn't need to change.
@@ -93,7 +150,8 @@ Finally, here's an explanation of some other variables that you shouldn't need t
 |NUMITERATIONS|      Number of iterations to run topic model (defaults to 1000)|
 |RAWDOCS|            Name for intermediate file with raw documents to be created automatically from the CSV file|
 
-### What the driver does
+<div id="driver"/>
+### Running the driver
 
 The main flow in the driver is as follows:
 
@@ -101,9 +159,7 @@ The main flow in the driver is as follows:
 * Run run_mallet.py to build a topic model on NLP-preprocessed text for each value of NUMTOPICS
 * For each model create the materials used in the TOPCAT human curation protocol 
 
-
-
-
+To run the driver, simply execute `driver.csh` on the command line. 
 
 
 
@@ -116,46 +172,46 @@ Optionally, the config file can specify a header label for a column with unique 
 Text encodings are a common issue when working with spreadsheets. In general, if your text is in UTF-8 things should work fine.  If you encounter encoding issues, we recommend [iconv](https://en.wikipedia.org/wiki/Iconv) as a generally workable solution.  Often `iconv -f windows-1252 -t utf-8 -c < infile > outfile` works well for converting Windows-based spreadsheets, where the `-c` flag says to discard any non-convertible characters.-->
 
 
-### Guidance on topic model granularity
-
-Topic models require you to specify in advance the number of categories you would like to automatically create, which we will refer to as the *granularity* of the model; in the literature this value is conventionally referred to as *K*.  
-
-The best granularity varies from analysis to analysis, and at present there are no fully reliable methods to optimize that number for any given collection of text (although we're working on that). For now, the TOPCAT approach involves running multiple models at different granularities and an efficient human-centered process for selecting which one is the best starting point for more detailed curation. 
-
-We generally recommend creating three (or at most up to five) models with different granularities, and these are heuristics we generally follow (anecdotally consistent withg what we have heard from a number of other frequent topic model practitioners). 
-
-* For a document collection with fewer than 500 documents, we would typically try K=5,10,15, though note that LDA may or may not produce anything of use at all for collections that small. 
-
-* For 500-to-1000 documents (K=10,15,20 or 10,20,30)
-
-* For 1000-to-10000 (K=15,20,40 or 20,30,50)
-
-* For 10000- to-200000 (K=75,100,150)
-
-These recommendations are anecdotally consistent with what we have heard from a number of other frequent topic model practitioners. Crucially, the human curation process reduces the burden to view any particular model size as optimal; in general we tend to err mildly on the side of more rather than fewer top- ics since our process permits less-good topics to be discarded and fine-grained topics can be merged under a single label and description. 
+[Return to top](#toc)
 
 
-## Selecting a model as the starting point for human curation
+<div id="human"/>
+## The human process
+
+
+<div id="model-selection"/>
+### Selecting a model as the starting point for human curation
 
 
 See [these instructions for model selection](model_selection.pdf).
 
+[Return to top](#toc)
 
-## Curating the model to build a codebook
+
+<div id="curating"/>
+### Curating the model to build a coding scheme
 
 There are two steps in model curation. 
 
-**Independent coding scheme creation**.  First, two independent analysts familiar with the subject matter (which we often refer to as subject matter experts or SMEs) go through the process for reviewing and labeling categories in [these instructions](protocol_instructions.pdf). This can be viewed as having the SMEs *independently* engage in codebook/category creation guided by the bottom-up topic model analysis.
+**Independent coding scheme creation**.  First, two independent analysts familiar with the subject matter (which we often refer to as subject matter experts or SMEs) go through the process for reviewing and labeling categories in [these instructions](protocol_instructions.pdf). This can be viewed as having the SMEs *independently* engage in coding scheme/category creation guided by the bottom-up topic model analysis.
 
 **Creating a consensus coding scheme**. Second, analysts look at the two independently-created sets of categories, following [these instructions](consensus_instructions.pdf) in order to arrive at a *consensus* set of categories.  These can be two other SMEs, or it can be the SMEs who worked independently in the previous step.
 
 The end result of this curation process is a set of categories and descriptions that have been guided via an automatic, scalable process that is bottom-up and thus minimizes human bias, while still retaining human quality control. 
 
-## Obtaining representative documents ("verbatims") for a code 
+[Return to top](#toc)
+
+
+<div id="verbatims"/>
+### Obtaining representative documents ("verbatims") for a code 
 
 It is often useful to select a set of good examples for codes in a coding scheme. This is straightforward using the files already created by the TOPCAT process.  In the materials used for human curation, each automatically created topic was accompanied by a set of its "top" documents.  These can be considered a set of ranked candidates for verbatims for the code created using that topic.
 
-## Coding the dataset  
+[Return to top](#toc)
+
+
+<div id="coding"/>
+### Coding the dataset  
 
 The TOPCAT protocol is currently designed for high-quality, efficient development of a coding scheme, not for automatically coding documents. Automated coding is an active subject of current research.
 
@@ -173,3 +229,27 @@ However, the output of the TOPCAT process does give you a reasonable first appro
 
 Voila!  You now have a spreadsheet containing the text, and for each code, a column containing either 0 or 1 depending on whether that code applies to that text item.
 
+[Return to top](#toc)
+
+
+
+<div id="granularity"/>
+## Guidance on topic model granularity
+
+Topic models require you to specify in advance the number of categories you would like to automatically create, which we will refer to as the *granularity* of the model; in the literature this value is conventionally referred to as *K*.  
+
+The best granularity varies from analysis to analysis, and at present there are no fully reliable methods to optimize that number for any given collection of text (although we're working on that). For now, the TOPCAT approach involves running multiple models at different granularities and an efficient human-centered process for selecting which one is the best starting point for more detailed curation. 
+
+We generally recommend creating three (or at most up to five) models with different granularities, and these are heuristics we generally follow (anecdotally consistent withg what we have heard from a number of other frequent topic model practitioners). 
+
+* For a document collection with fewer than 500 documents, we would typically try K=5,10,15, though note that LDA may or may not produce anything of use at all for collections that small. 
+
+* For 500-to-1000 documents (K=10,15,20 or 10,20,30)
+
+* For 1000-to-10000 (K=15,20,40 or 20,30,50)
+
+* For 10000- to-200000 (K=75,100,150)
+
+These recommendations are anecdotally consistent with what we have heard from a number of other frequent topic model practitioners. Crucially, the human curation process reduces the burden to view any particular model size as optimal; in general we tend to err mildly on the side of more rather than fewer top- ics since our process permits less-good topics to be discarded and fine-grained topics can be merged under a single label and description. 
+
+[Return to top](#toc)
