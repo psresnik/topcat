@@ -22,6 +22,8 @@
 	-   [Parameters you'll need to edit](#parameters-edit)
 	-   [Parameters you shouldn't need to edit](#parameters-noedit)
 	-   [Running the driver](#driver)
+	-   [What the driver produces](#outfiles)
+	-   [Example run](#example)
 
 *   [The human process](#human)
 	-	[Selecting a model as the starting point for human curation](#model-selection)
@@ -79,28 +81,37 @@ Follow the directions at Shawn Graham, Scott Weingart, and Ian Milligan, "Gettin
 
 [Return to top](#toc)
 
+
 <div id="installing"/>
 ### Installing the TOPCAT software
 
  
 * Installing the environment
 	*  If you have `conda` already installed, you should be good to go. Skip this step.
-	*  If not, we recommend that you install [miniconda](https://docs.conda.io/projects/miniconda/en/latest/index.html#quick-command-line-install) unless for other reasons you'd prefer to do a full [conda installation](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html)
+	
+	*  If not, we recommend that you install [miniconda](https://docs.conda.io/projects/miniconda/en/latest/index.html#quick-command-line-install) unless for other reasons you'd prefer to do a full [anaconda installation](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html)
 
 * Installing TOPCAT
 	* Do a `git clone` for this TOPCAT package
 
 * Installing necessary packages
 	* For reference, see the conda documentation on [Creating an environment from an environment.yml file](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file)
-	* At the moment, we have two separate conda environments that need to be installed. These will eventually be combined into just one. 
+	
+	* At the moment, we have two separate conda environments that need to be installed. These will be combined into just one when we make the move to a python driver. 
 		* The `topics` package:
+		
 			* Edit the `prefix` variable at the end of [code/topics.yml](code/topics.yml) so that it points to wherever you want the `topics` environment to live
+
+		
 			* Excecute `conda env create -f code/topics.yml`
 
 		* The `topic_curation` package:
+		
 			* Edit the `prefix` variable at the end of [code/topic_curation.yml](code/topic_curation.yml) so that it points to wherever you want the `topic_curation` environment to live
-			* Excecute `conda env create -f code/topic_curation.yml`	
+			
+			* Execute `conda env create -f code/topic_curation.yml`
 
+	* Finally, install the [csvfix](https://wlbr.de/csvfix/) package via [this git repository](https://github.com/wlbr/csvfix). 
 
 [Return to top](#toc)
 
@@ -109,7 +120,9 @@ Follow the directions at Shawn Graham, Scott Weingart, and Ian Milligan, "Gettin
 <div id="parameters-edit"/>
 ### Parameters you'll need to edit
 
-Right now TOPCAT is driven by the `drivers.csh` shell script in the `code/src` directory. (It's `csh`, not `bash`, because I'm seriously old school.) Ultimately this will be rewritten as a python program that reads a `config.ini` configuration file, but for now parameters for the runs are established using environment variable assignments at the top of the script. That means you'll want a separate copy of the script for each dataset you analyze.
+Right now TOPCAT is driven by the `drivers.csh` shell script in the `code/src` directory. (It's `csh`, not `bash`, because I'm seriously old school. And yes, I already know `csh` is [widely reviled ](https://www.grymoire.com/Unix/CshTop10.txt)for shell scripting. But this particular script isn't all that fancy and it gets the job done.) 
+
+Ultimately this driver will be rewritten as a python program that reads a `config.ini` configuration file, but for now parameters for the runs are established using environment variable assignments at the top of the script. That means you'll want a separate copy of the script for each dataset you analyze.
 
 Here's a description of the variables you'll need to localize/customize and what they are for.
 
@@ -118,9 +131,9 @@ __Installation variables__
 |Variable|Description|
 |-----------|-----------|
 |MALLETDIR|          Installed directory for MALLET (contains the MALLET `LICENSE` file)|
-|TOPCATDIR|			 Directory with the TOPCAT code (contains `driver.csh` and `src/` subdirectory)
-|PREPROC|            Full path to this package's preprocessing script, e.g. `preprocessing_en.py` |
-|RUNMALLET|          Full path to this package Mallet driver, i.e. `run_mallet.py` |
+|TOPCATDIR|			 Directory with the TOPCAT package (contains this README.md file)
+|PREPROC|            Full path to this package's NLP preprocessing script, e.g. `preprocessing_en.py` |
+|RUNMALLET|          Full path to this package's Mallet driver, i.e. `run_mallet.py` |
 
 __Analysis-specific variables__
 
@@ -133,9 +146,9 @@ __Analysis-specific variables__
 |MODELNAME|          Name to use for the models|
 |DATADIR|            Directory software will create to contain topic modeling output|
 |OUTDIR|             Directory software will create to contain the files to be used during human curation|
-|GRANULARITIES|		 List of topic model sizes to try for potential starting-point models|
+|GRANULARITIES|		 List of topic model sizes to try for potential starting-point models, e.g. `'(20 30 40)'`|
 
-With regard to `GRANULARITIES`, the driver script iterates through several (typically three to five) choices of topic model size. This value is typically denoted K in the topic modeling literature. See the _Guidance on Topic Model Granularity_ discussion below for recommendations about what values to use, which depends on the dataset.  Note that the `csh` syntax is a little persnickety so when you edit that veriable, make sure you only change the numbers, not the parentheses or single-quotes.
+With regard to `GRANULARITIES`, the driver script iterates through several (typically three to five) choices of topic model size. This value is typically denoted K in the topic modeling literature. See the [_Guidance on Topic Model Granularity_](#granularity) discussion below for recommendations about what values to use, which depends on the dataset.  Note that the `csh` syntax is a little persnickety so when you edit that veriable, make sure you only change the numbers, not the parentheses or single-quotes.
 
 
 
@@ -149,6 +162,7 @@ Finally, here's an explanation of some other variables that you shouldn't need t
 |STOPLIST|           Stoplist (words to ignore), one word per line (defaults to MALLET's stoplist)|
 |NUMITERATIONS|      Number of iterations to run topic model (defaults to 1000)|
 |RAWDOCS|            Name for intermediate file with raw documents to be created automatically from the CSV file|
+|SEED|					 Random seed for MALLET runs (for reproducibility)
 
 <div id="driver"/>
 ### Running the driver
@@ -161,6 +175,31 @@ The main flow in the driver is as follows:
 
 To run the driver, simply execute `driver.csh` on the command line. 
 
+Currently you may get some warnings but if things work properly the script should run all the way through. 
+
+<div id="outfiles">
+### What the driver produces
+
+In the OUTDIR directory specified in the driver, you will find one subdirectory per granularity in GRANULARITIES. In each directory you will find the following three files to be used during the human curation process.
+
+|Output file|Description|
+|-----------|-----------|
+|GRANULARITY_categories.xlsx| Top-words bar-chart and top documents for each topic|
+|GRANULARITY_clouds.pdf| Cloud representation for each topic|
+|GRANULARITY_alldocs.xlsx| Document-topic distribution with one document per row (in the `text` column)|
+
+<div id="example">
+### Example run
+
+Assuming that you have installed everything and created a version of the driver file with variables appropriately edited, you can run topic modeling for the example dataset in `example` simply by executing 
+
+`code/driver.csh` 
+
+with no arguments. This will run through the topic modeling process for a sample of 2000 public comments (out of ~130,000) submitted to the U.S. Food and Drug Administration (FDA) in response to a 2021 request for public comments about emergency use authorization for a child COVID-19 vaccine. The original comments are publicly available [here](https://www.regulations.gov/document/FDA-2021-N-1088-0001) and [straightforward to download](https://www.regulations.gov/bulkdownload). Note that some comments can contain upsetting language or content.
+
+After it runs to completion you will find the output files suitable for the human curation process in an `example/out` subdirectory. Intermediate modeling output (including the preprocessed version of the corpus) can be found in `example/data`.
+
+To confirm that things have run successfully, you can compare your outputs with the output material in `example_out`. The output might not be identical, because topic modeling has an element of randomness and your results could vary on a different machine even if you're using the default random seed value. However, for eachy granularity your topic models and the example outputs provided with the package are expected to be substantially similar. 
 
 
 <!--
@@ -213,9 +252,11 @@ It is often useful to select a set of good examples for codes in a coding scheme
 <div id="coding"/>
 ### Coding the dataset  
 
-The TOPCAT protocol is currently designed for high-quality, efficient development of a coding scheme, not for automatically coding documents. Automated coding is an active subject of current research.
+The TOPCAT protocol is currently designed for high-quality, efficient development of a coding scheme, not for automatically coding documents. Automated coding is an active subject of current research, e.g. see:
 
-However, the output of the TOPCAT process does give you a reasonable first approximation of automatic coding that is suitable for human review and correction, which should be much more efficient than coding from scratch. Do the following:
+* *Stub for references to automatic coding papers*
+
+However, even without such fancier approaches the output of the TOPCAT process does give you a reasonable first approximation of automatic coding that is suitable for human review and correction, which should be much more efficient than coding from scratch. For example, you can do the following:
 
 * In the directory containing the topic model for your output, you'll find a file called `document_topics.csv`.  Open it in Excel.
 * Each column in this file is labeled with a topic number (e.g. `Topic 12`), matching the topic numbers for the materials that were curated.  
@@ -228,6 +269,8 @@ However, the output of the TOPCAT process does give you a reasonable first appro
 * Once this is done for all the codes, sort the spreadsheet by the `docID` column to put it back in the original order.
 
 Voila!  You now have a spreadsheet containing the text, and for each code, a column containing either 0 or 1 depending on whether that code applies to that text item.
+
+*To consider: provide instructions for importing the model-based coding into NVivo for review/correction?*
 
 [Return to top](#toc)
 
