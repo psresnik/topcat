@@ -381,7 +381,7 @@ def create_topic_word_clouds_file(topic_word,
                                   outdir,
                                   num_words = 50):
     ''' generates the word clouds PDF [combined], control the number of words to use for generating clouds using num_words '''
-    pdf_outfile = outdir + "clouds.pdf"
+    pdf_outfile = outdir + "/" + "clouds.pdf"
     num_topics, num_words = topic_word.shape
     pdfs = []
     for k in range(num_topics):

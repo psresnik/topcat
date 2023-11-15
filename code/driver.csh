@@ -6,27 +6,17 @@
 # NLP preprocessing and topic modeling using MALLET,
 # followed by creation of files for human topic model curation.
 #
-# Uses run_mallet.py to do preprocessing, run mallet, postprocessing
-# These produce LDA output as word_topics.csv and document_topics.csv.
-# Then uses the topic_curation package to create files suitable for
-# use in the human curation process.
-#
-# Note that although many parameters are pulled into shell variables
-# for easy adaptation, there are a number of hard-wired elements.
-#
-# Eventually this script should be converted into a top-level
+# TO DO: This script should be converted into a top-level
 # driver in Python, though note that different conda environments
 # are active in different parts of the script so that will need
 # to be taken care of, probably by combining into a single
 # environment.
 #
+# (And yes, I know csh is a terrible choice for shell scripting.)
+#
 #####################################################################
 
-#####################################################################
-# Need to have C
-# Add csvfix bin to path
-#####################################################################
-setenv PATH ~/misc/pkg/csvfix/csvfix-build/csvfix/bin:$PATH
+echo -n "Starting: "; date
 
 ################################################################
 # Parameters you will need to update for your work
@@ -35,32 +25,42 @@ setenv PATH ~/misc/pkg/csvfix/csvfix-build/csvfix/bin:$PATH
 # Installation variables
 setenv MYHOME             /Users/myusername/misc
 setenv MALLETDIR          $MYHOME/pkg/mallet/mallet-git/Mallet
-setenv TOPCATDIR          $MYHOME/projects/topcat/github/code
-setenv PREPROC            $TOPCATDIR/src/preprocessing_en.py
-setenv RUNMALLET          $TOPCATDIR/src/run_mallet.py
+setenv TOPCATDIR          $MYHOME/projects/topcat/github
+setenv PREPROC            $TOPCATDIR/code/src/preprocessing_en.py
+setenv RUNMALLET          $TOPCATDIR/code/src/run_mallet.py
 
 #  Analysis-specific variables
 #  See README.md for explanations of variables.
-setenv ROOTDIR            $MYHOME/projects/hospital_reviews/Google_Reviews
-setenv CSV                $ROOTDIR/reviews.csv
-setenv TEXTCOL            9
-setenv MODELNAME          reviews
+setenv ROOTDIR            $TOPCATDIR/example
+setenv CSV                $TOPCATDIR/example/fda_1088_sampled_2K.csv
+setenv TEXTCOL            2
+setenv MODELNAME          comments1088
 setenv DATADIR            $ROOTDIR/data
 setenv OUTDIR             $ROOTDIR/out
-setenv GRANULARITIES      '(10 20 30)'
+setenv GRANULARITIES      '10 20 30'
+
+if (-d $OUTDIR) then
+  echo "WARNING"
+  echo "WARNING: Directory $OUTDIR already exists."
+  echo "WARNING: Consider stopping this run, deleting it, and starting again."
+  echo "WARNING"
+  sleep 3
+endif
+
+# Add csvfix binary directory to your execution PATH
+setenv PATH               $MYHOME/pkg/csvfix/csvfix-build/csvfix/bin:$PATH
 
 ################################################################
 # Other things you could change but probably won't need to.
 # See README.md for explanations of variables.
 ################################################################
-
-
 setenv WORKDIR            $DATADIR/modeling
 setenv RAWDOCS            $WORKDIR/${MODELNAME}_raw.txt
 setenv PREPROCDIR         $WORKDIR/processed
 setenv STOPLIST           $MALLETDIR/stoplists/en.txt
 setenv NUMITERATIONS      1000
-setebv MAXDOCS            100
+setenv MAXDOCS            100
+setenv SEED               13
 
 mkdir $OUTDIR
 mkdir $DATADIR
@@ -70,7 +70,7 @@ mkdir $DATADIR
 #
 # Note: csvfix write_dsv -f 1  converts single col CSV to text
 #
-# Note: add tail -n+2 to exclude CSV header line?
+# Note: tail -n+2 removes 1st line of CSV (assumes it's header)
 #
 # Note: need to add bookkeeping to preserve correspondence
 #       with docID column so that documents can be linked back
@@ -96,6 +96,7 @@ cat $CSV \
 
 csvfix write_dsv -f $TEXTCOL $WORKDIR/temp_clean.csv \
  | grep . \
+ | tail -n+2 \
  > $RAWDOCS
 
 rm $WORKDIR/temp_clean.csv
@@ -111,7 +112,7 @@ echo "Done. Created $RAWDOCS"
 
 
 # Loop through different topic model sizes
-foreach NUMTOPICS $GRANULARITIES
+foreach NUMTOPICS ( $GRANULARITIES )
 
   # Activate conda environment for the topic modeling
   conda activate topics
@@ -135,7 +136,7 @@ foreach NUMTOPICS $GRANULARITIES
   mkdir $CURATIONDIR
   python  $RUNMALLET \
     --package              mallet \
-    --mallet_bin           $MALLETDIR/bin/mallet \
+    --mallet_bin           $MALLETDIR/bin \
     --preprocessing        $PREPROC \
     --stoplist             $STOPLIST \
     --modelname            $MODELNAME \
@@ -147,18 +148,10 @@ foreach NUMTOPICS $GRANULARITIES
     --document_topics_file $CURATIONDIR/document_topics.csv \
     --numtopics            $NUMTOPICS \
     --numiterations        $NUMITERATIONS \
-    --extra_args           "--random-seed 13" 
-
-  # Generate cloud visualizations in $MODELDIR/theme_clouds
-  # Note: topwords.py assumes document_topics.csv and word_topics.csv are in current directory
-  # (TO DO: Add commandline options to topwords.py for source and destination directories.)
-  pushd $CURATIONDIR
-  echo "Creating clouds"
-  python $TOPCAT/code/src/topwords.py > $CURATIONDIR/top_words.txt
-  popd
+    --extra_args           "--random-seed $SEED" 
 
   #
-  # Generate model selection spreadsheets (bar-chart version of topic-word distribution plus top documents)
+  # Generate human-curation materials
   #
 
   # Activate conda environment for generation of curation materials
@@ -166,14 +159,14 @@ foreach NUMTOPICS $GRANULARITIES
 
   # Convert run_mallet.py CSV file outputs to numpy
   echo "Converting run_mallet.py CSV outputs to numpy"
-  python $$TOPCAT/code/src/convert_csv_to_npy.py \
+  python $TOPCATDIR/code/src/convert_csv_to_npy.py \
     --topic_word $CURATIONDIR/word_topics.csv \
     --doc_topic  $CURATIONDIR/document_topics.csv \
     --output     $CURATIONDIR
 
   # Create curation file including top-docs and coherence ratings column
   echo "Creating topic curation file"
-  python $$TOPCAT/code/src/create_topic_curation_files_with_custom_ratings_columns.py \
+  python $TOPCATDIR/code/src/create_topic_curation_files_with_custom_ratings_columns.py \
     --topic_word          $CURATIONDIR/topic_word.npy \
     --doc_topic           $CURATIONDIR/doc_topic.npy \
     --texts               $CURATIONDIR/raw_documents.txt \
@@ -187,20 +180,18 @@ foreach NUMTOPICS $GRANULARITIES
 
 
   date
-  echo "Done. Results in $CURATIONDIR"
+  echo "Done."
 
 # End of For loop for NUMTOPICS  
 end
 
 echo "Done"
 date
-echo "-----------------------"
-
+echo "================================================================"
 
 # Gather up curation files suitable for distribution
-mkdir $OUTDIR
-foreach NUMTOPICS ( 50 70 100 )
-  echo "Creating curation distribution files for granularity $NUMTOPICS"
+foreach NUMTOPICS ( $GRANULARITIES )
+  echo "Gathering human curation files for granularity $NUMTOPICS"
 
   setenv MODELDIR           $WORKDIR/model_k$NUMTOPICS
   setenv CURATIONDIR        $MODELDIR/curation
@@ -211,4 +202,9 @@ foreach NUMTOPICS ( 50 70 100 )
   cp $CURATIONDIR/topic_word.xlsx       $FINALDIR/${PREFIX}_categories.xlsx
   cp $CURATIONDIR/document_topics.xlsx  $FINALDIR/${PREFIX}_alldocs.xlsx
 end
+echo "================================================================"
+echo -n "Done: "; date
+echo "Files for human curation are in $OUTDIR"
+echo "================================================================"
+
 
