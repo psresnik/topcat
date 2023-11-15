@@ -1,5 +1,0 @@
-See https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#sharing-an-environment for info about sharing environments. Specifically, *.yml were created following the instructions at https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#exporting-an-environment-file-across-platforms.
-
-See https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#specifying-a-location-for-an-environment for info regarding the "prefix" component in the *.yml files. Also https://stackoverflow.com/questions/66839948/whats-the-point-of-the-prefix-line-in-conda-environment-file-when-creating-a-ne.
-
-
