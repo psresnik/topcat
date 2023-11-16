@@ -14,4 +14,5 @@ dependencies:
   - pypdf2=2.9.0
   - kneed
   - tqdm
-prefix: /Users/resnik/opt/anaconda3/envs/topic_curation
+prefix: C:\Users\ru87jah\AppData\Local\miniconda3\envs\topic_curation 
+#/Users/resnik/opt/anaconda3/envs/topic_curation

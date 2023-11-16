@@ -7,4 +7,5 @@ dependencies:
   - wordcloud
   - traceback-with-variables
   - pandas
-prefix: /Users/resnik/opt/anaconda3/envs/topics
+prefix: C:\Users\ru87jah\AppData\Local\miniconda3\envs\topics 
+#/Users/resnik/opt/anaconda3/envs/topics

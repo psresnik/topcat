@@ -28,7 +28,7 @@
 #
 ###################################################################################################
 # Next line can be deleted if you prefer normal python error traceback
-from traceback_with_variables import activate_by_import
+# from traceback_with_variables import activate_by_import
 import argparse
 import codecs
 import sys
