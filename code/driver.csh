@@ -144,6 +144,7 @@ foreach NUMTOPICS ( $GRANULARITIES )
     --preprocessed_docs    $PREPROCESSED_DOCS \
     --workdir              $WORKDIR \
     --modeldir             $MALLET_OUTDIR \
+    --model2csv            $TOPCATDIR/code/src/model2csv.py \
     --word_topics_file     $CURATIONDIR/word_topics.csv \
     --document_topics_file $CURATIONDIR/document_topics.csv \
     --numtopics            $NUMTOPICS \
