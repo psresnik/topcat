@@ -222,7 +222,7 @@ Text encodings are a common issue when working with spreadsheets. In general, if
 ### Selecting a model as the starting point for human curation
 
 
-See [these instructions for model selection](model_selection.pdf).
+See [these instructions for model selection](instructions/model_selection.pdf).
 
 [Return to top](#toc)
 
@@ -232,9 +232,9 @@ See [these instructions for model selection](model_selection.pdf).
 
 There are two steps in model curation. 
 
-**Independent coding scheme creation**.  First, two independent analysts familiar with the subject matter (which we often refer to as subject matter experts or SMEs) go through the process for reviewing and labeling categories in [these instructions](protocol_instructions.pdf). This can be viewed as having the SMEs *independently* engage in coding scheme/category creation guided by the bottom-up topic model analysis.
+**Independent coding scheme creation**.  First, two independent analysts familiar with the subject matter (which we often refer to as subject matter experts or SMEs) go through the process for reviewing and labeling categories in [these instructions](instructions/protocol_instructions.pdf). This can be viewed as having the SMEs *independently* engage in coding scheme/category creation guided by the bottom-up topic model analysis.
 
-**Creating a consensus coding scheme**. Second, analysts look at the two independently-created sets of categories, following [these instructions](consensus_instructions.pdf) in order to arrive at a *consensus* set of categories.  These can be two other SMEs, or it can be the SMEs who worked independently in the previous step.
+**Creating a consensus coding scheme**. Second, analysts look at the two independently-created sets of categories, following [these instructions](instructions/consensus_instructions.pdf) in order to arrive at a *consensus* set of categories.  These can be two other SMEs, or it can be the SMEs who worked independently in the previous step.
 
 The end result of this curation process is a set of categories and descriptions that have been guided via an automatic, scalable process that is bottom-up and thus minimizes human bias, while still retaining human quality control. 
 
