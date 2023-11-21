@@ -16,6 +16,8 @@
 #
 #####################################################################
 
+#source opt/anaconda3/base/bin/activate.csh
+
 echo -n "Starting: "; date
 
 ################################################################
@@ -23,9 +25,9 @@ echo -n "Starting: "; date
 ################################################################
 
 # Installation variables
-setenv MYHOME             'C:' #/Users/myusername/misc
+setenv MYHOME             /Users/boleima/Documents/projects/topcat #'C:' #/Users/myusername/misc
 setenv MALLETDIR          $MYHOME/mallet #$MYHOME/pkg/mallet/mallet-git/Mallet
-setenv TOPCATDIR          $MYHOME/Users/ru87jah/Documents/topcat/topcat #$MYHOME/projects/topcat/github
+setenv TOPCATDIR          $MYHOME/topcat #/Users/ru87jah/Documents/topcat/topcat #$MYHOME/projects/topcat/github
 setenv PREPROC            $TOPCATDIR/code/src/preprocessing_en.py
 setenv RUNMALLET          $TOPCATDIR/code/src/run_mallet.py
 
@@ -48,7 +50,7 @@ if (-d $OUTDIR) then
 endif
 
 # Add csvfix binary directory to your execution PATH
-setenv PATH "${PATH}:C:\Program Files (x86)\CSVfix"
+# setenv PATH "${PATH}:C:\Program Files (x86)\CSVfix"
 
 ################################################################
 # Other things you could change but probably won't need to.
@@ -115,7 +117,7 @@ echo "Done. Created $RAWDOCS"
 foreach NUMTOPICS ( $GRANULARITIES )
 
   # Activate conda environment for the topic modeling
-  conda.bat activate topics
+  activate topics #conda.bat activate topics
 
   echo "================================================================"
   echo "Running $NUMTOPICS topic model"
@@ -145,19 +147,18 @@ foreach NUMTOPICS ( $GRANULARITIES )
     --preprocessed_docs    $PREPROCESSED_DOCS \
     --workdir              $WORKDIR \
     --modeldir             $MALLET_OUTDIR \
-    --tempfile             $TEMPFILE \
     --word_topics_file     $CURATIONDIR/word_topics.csv \
     --document_topics_file $CURATIONDIR/document_topics.csv \
     --numtopics            $NUMTOPICS \
     --numiterations        $NUMITERATIONS \
     --extra_args           "--random-seed $SEED" 
-
+  # --tempfile             $TEMPFILE \
   #
   # Generate human-curation materials
   #
 
   # Activate conda environment for generation of curation materials
-  conda.bat activate topic_curation
+  activate topic_curation # conda.bat activate topic_curation
 
   # Convert run_mallet.py CSV file outputs to numpy
   echo "Converting run_mallet.py CSV outputs to numpy"

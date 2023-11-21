@@ -17,10 +17,10 @@
 #   
 ################################################################
 # Next line can be deleted if you prefer normal python error traceback
-#  from traceback_with_variables import activate_by_import
+#from traceback_with_variables import activate_by_import
 
 import argparse
-#import tempfile
+import tempfile
 import os
 import sys
 import pandas as pd
@@ -28,10 +28,10 @@ import pandas as pd
 ################################################################
 # Default values. Change these for your local installation.
 ################################################################
-default_mallet_bin           =  'C:/mallet/bin' #'/Users/resnik/misc/pkg/mallet/mallet-git/Mallet/bin'
-default_stoplist             =  'C:/mallet/stoplists/en.txt' #'/Users/resnik/misc/pkg/mallet/mallet-git/Mallet/stoplists/en.txt'
-default_preprocessing        =  'C:/Users/ru87jah/Documents/topcat/topcat/code/src/preprocessing_en.py' #'/Users/resnik/misc/projects/rapid2020_nsf/modeling/preprocessing.py'
-default_model2csv            =  'C:/Users/ru87jah/Documents/topcat/topcat/code/src/model2csv.py' #'/Users/resnik/Misc/pkg/scholar_clip/scholar/utils/model2csv.py' # subject to change
+default_mallet_bin           =  '/Users/boleima/Documents/projects/topcat/mallet/bin' # 'C:/mallet/bin' #'/Users/resnik/misc/pkg/mallet/mallet-git/Mallet/bin'
+default_stoplist             =  '/Users/boleima/Documents/projects/topcat/mallet/stoplists/en.txt'#'C:/mallet/stoplists/en.txt' #'/Users/resnik/misc/pkg/mallet/mallet-git/Mallet/stoplists/en.txt'
+default_preprocessing        =  '/Users/boleima/Documents/projects/topcat/topcat/code/src/preprocessing_en.py'#'C:/Users/ru87jah/Documents/topcat/topcat/code/src/preprocessing_en.py' #'/Users/resnik/misc/projects/rapid2020_nsf/modeling/preprocessing.py'
+default_model2csv            =  '/Users/boleima/Documents/projects/topcat/topcat/code/src/model2csv.py'#'C:/Users/ru87jah/Documents/topcat/topcat/code/src/model2csv.py' #'/Users/resnik/Misc/pkg/scholar_clip/scholar/utils/model2csv.py' # subject to change
 default_word_topics_file     =  './word_topics.csv'
 default_document_topics_file =  './document_topics.csv'
 default_optimize_interval    =  10
@@ -72,8 +72,8 @@ parser.add_argument('-i','--numiterations',
 parser.add_argument('-x','--extra_args',
                         help='Command-line flags to add to topic modeling command. ' \
                         'For example: -x "--random-seed 42 --beta 0.1"',                dest='extra_args',             default='')
-parser.add_argument('-t','--tempfile',
-                        help='dir of a temp file',                                      dest='tempfile',             default=None)
+#parser.add_argument('-t','--tempfile',
+#                        help='dir of a temp file',                                      dest='tempfile',             default=None)
 
 
 
@@ -93,7 +93,7 @@ stoplist              = args['stoplist']
 numtopics             = args['numtopics']
 numiterations         = args['numiterations']
 extra_args            = args['extra_args']
-tempfile              = args['tempfile']
+#tempfile              = args['tempfile']
 
 if args['workdir'] is None :
     parser.error('Required arguments: --workdir. Use -h to see detailed usage info.')
@@ -116,10 +116,10 @@ if raw_docs is not None:
     
     # Run preprocessing, collect output
     # Note: optional arg --emptyline 'contents" can be used to make sure preproc docs have no blank lines 
-    ## tempfile_fp    = tempfile.NamedTemporaryFile()
-    ## tempfile_name  = tempfile_fp.name
-    # as the tempfile package doesn't work, we define ourselves the tempfile
-    tempfile_name  = tempfile
+    tempfile_fp    = tempfile.NamedTemporaryFile()
+    tempfile_name  = tempfile_fp.name
+    ## as the tempfile package doesn't work, we define ourselves the tempfile
+    ## tempfile_name  = tempfile
     template       = "python {} --stoplist {} --infile {} > {}"
     cmd            = template.format(preprocessing, stoplist, raw_docs, tempfile_name)
     sys.stderr.write("Running: {}\n".format(cmd))
@@ -140,12 +140,12 @@ if raw_docs is not None:
     docs_df.to_csv(preprocessed_docs, sep='\t', index=False, header=False)
     sys.stderr.write("Done writing to {}\n".format(preprocessed_docs))
 
-    ## tempfile_fp.close()
+    tempfile_fp.close()
 
 # Import preprocessed documents 
 importfile = "{}/{}.mallet".format(workdir, modelname)
-#template   = "{}/mallet import-file --input {} --output {} --token-regex '\S+' --preserve-case --keep-sequence"
-template   = "{}/mallet import-file --input {} --output {} --preserve-case --keep-sequence"
+template   = "{}/mallet import-file --input {} --output {} --token-regex '\S+' --preserve-case --keep-sequence"
+##template   = "{}/mallet import-file --input {} --output {} --preserve-case --keep-sequence"
 
 cmd        = template.format(mallet_bin, preprocessed_docs, importfile)
 sys.stderr.write("Running: {}\n".format(cmd))
