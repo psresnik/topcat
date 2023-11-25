@@ -232,9 +232,9 @@ See [these instructions for model selection](instructions/model_selection.pdf).
 
 There are two steps in model curation. 
 
-**Independent coding scheme creation**.  First, two independent analysts familiar with the subject matter (which we often refer to as subject matter experts or SMEs) go through the process for reviewing and labeling categories in [these instructions](instructions/protocol_instructions.pdf). This can be viewed as having the SMEs *independently* engage in coding scheme/category creation guided by the bottom-up topic model analysis.
+**Independent coding scheme creation**.  First, two independent analysts familiar with the subject matter (which we often refer to as subject matter experts or SMEs) go through the process for reviewing and labeling categories in [these instructions](instructions/topic_instructions.pdf). This can be viewed as having the SMEs *independently* engage in coding scheme/category creation guided by the bottom-up topic model analysis.
 
-**Creating a consensus coding scheme**. Second, analysts look at the two independently-created sets of categories, following [these instructions](instructions/consensus_instructions.pdf) in order to arrive at a *consensus* set of categories.  These can be two other SMEs, or it can be the SMEs who worked independently in the previous step.
+**Creating a consensus coding scheme**. Second, analysts look at the two independently-created sets of categories, following [these instructions](instructions/consensus_instructions.pdf) in order to arrive at a *consensus* set of categories.  These can be two other SMEs, or it can be the SMEs who worked independently in the previous step. (*Note: the consensus instructions have not yet been updated to be consistent with the most recent versions of file names, etc.)*
 
 The end result of this curation process is a set of categories and descriptions that have been guided via an automatic, scalable process that is bottom-up and thus minimizes human bias, while still retaining human quality control. 
 
@@ -258,15 +258,32 @@ The TOPCAT protocol is currently designed for high-quality, efficient developmen
 
 However, even without such fancier approaches the output of the TOPCAT process does give you a reasonable first approximation of automatic coding that is suitable for human review and correction, which should be much more efficient than coding from scratch. For example, you can do the following:
 
-* In the directory containing the topic model for your output, you'll find a file called `document_topics.csv`.  Open it in Excel.
-* Each column in this file is labeled with a topic number (e.g. `Topic 12`), matching the topic numbers for the materials that were curated.  
-* For each column that was given a code in the coding schema:
+* The products of the human curation effort include: 
+  - A *coding_scheme.xlsx* file that contains the coding scheme that was created via topic-driven human curation. This can be viewed as the starting point for a codebook. 
+
+  - A version of the `alldocs.xlsx` spreadsheet in which the generic headers (*Topic 1*, *Topic 2*m, etc.) have been replaced by code labels from the coding scheme.
+
+* Open both files in Excel. (Alternatively, you might find it convenient to print the coding scheme and keep it handy, and just open the all-documents spreadsheet.)
+
+* Each column in the *alldocs* should match a corresponding row in the coding scheme.  
+
+* For each column that was given a code in the coding schema (not *DISCARD* or marked as irrelevant):
+
   - Hide columns to the right of this one, up to but not including the `text` column containing the document text.
+
   - Sort the spreadsheet on this code's column in descending numeric order. The documents are now ranked by "goodness of fit" to the code.  (This is the same ranking used to select verbatims as discussed above.)
-  - Add a new column to the right of that column, titled "Contains code".
+
+  - Add a new column to the right of that column, titled "Contains code LABEL" where *LABEL* is the code name/label.
+
   - Fill that entire column with the value 0 (meaning no, that item doesn't contain the code)
-  - Proceed from the top row downward, changing 0 to 1 if the code applies to the document.  That will happen a lot toward the top (where the numbers are higher) and less often as you proceed down the column.
-* Once this is done for all the codes, sort the spreadsheet by the `docID` column to put it back in the original order.
+
+  - Proceed from the top row downward, changing 0 to 1 if the code applies to the document.  That will happen a lot toward the top (where the numbers are higher) and less often as you proceed down the column. 
+  
+  - Alternatively, you might want to first fill the first 100 values with 1 and change them to 0 when the code *doesn't* apply; then do the same thing for the next 100 items; etc. Because you've sorted by "how good" this code is for the items, the highest-up items are more likely to be good items for this code, and at some point you'll see that it makes more sense to switch from correcting 1's to 0's to starting with 0's and correcting to 1's.  
+
+  - You are likely (certain!) to reach a point where you're assigning 1's very infrequently. In practice once you reach that point, it may make sense to move on to the next column, depending on your tolerance for false negatives.  
+  
+* Once this is done for all the codes, sort the spreadsheet by the `docID` column to put it back in the original order.  
 
 Voila!  You now have a spreadsheet containing the text, and for each code, a column containing either 0 or 1 depending on whether that code applies to that text item.
 
