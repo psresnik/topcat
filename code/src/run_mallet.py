@@ -132,7 +132,7 @@ if raw_docs is not None:
     # Commenting out version where pd.read_csv was used to create dataframe
     # Instead, just reading lines from the file as strings into a fresh dataframe
     # docs_df  = pd.read_csv(tempfile_name, sep='\t', encoding='utf-8', header=None, engine='python', on_bad_lines='warn', skip_blank_lines = False)
-    with open(tempfile_name, 'r', encoding="unicode_escape") as file: # use unicode_escape to escape the non unicodes
+    with open(tempfile_name, 'r') as file: # , encoding="unicode_escape" use unicode_escape to escape the non unicodes 
           lines = file.read().splitlines()
     docs_df = pd.DataFrame(lines, columns=['text'])
     docs_df.insert(loc = 0, column = 'modelname', value = modelname)
@@ -177,27 +177,16 @@ cmd      = ' '.join(template.split()) # Multiple spaces in string -> single spac
 sys.stderr.write("Running: {}\n".format(cmd))
 os.system(cmd)
 
-# Convert model output to CSV format
-# Preprocessed docs file is already in the 3-column format
-# remove all the unnecessary steps below
-docfile = preprocessed_docs
 
-template = "python {} --package mallet --docfile {} --modeldir {} --modelname {} --word_topics_file {} --document_topics_file {} --vocabfile {}/{}.word-topic-counts"
-cmd      = template.format(model2csv, docfile, modeldir, modelname, word_topics_file, document_topics_file, modeldir, modelname)
-sys.stderr.write("Creating CSV files. Running: {}\n".format(cmd))
-os.system(cmd)
-
-
-"""
 if (model2csv):
     
   # Convert model output to CSV format
   if raw_docs:
       # Create 3-column format for raw documents, as expected by model2csv
-      ## docfile_fp  = tempfile.NamedTemporaryFile()
-      ## docfile     = docfile_fp.name
+      docfile_fp  = tempfile.NamedTemporaryFile()
+      docfile     = docfile_fp.name
       # as the tempfile package does not work, we define the docfile to be tempfile
-      docfile = tempfile 
+      # docfile = tempfile 
       sys.stderr.write("Converting {} to 3-column format and writing to {}\n".format(raw_docs, docfile))
       # Commenting out version where pd.read_csv was used to create dataframe
       # since this is now throwing an error, even after updating to use on_bad_lines.
@@ -205,12 +194,14 @@ if (model2csv):
       #  # raw_docs_df  = pd.read_csv(raw_docs, sep='\t', encoding='utf-8', header=None, engine='python', warn_bad_lines=True, error_bad_lines=True)
       #  raw_docs_df  = pd.read_csv(raw_docs, sep='\t', encoding='utf-8', header=None, engine='python', on_bad_lines='warn')
       # Instead, just reading lines from the file as strings into a fresh dataframe
-      with open(raw_docs, 'r', encoding="unicode_escape") as file:
+      with open(raw_docs, 'r') as file: # , encoding="unicode_escape"
           lines = file.read().splitlines()
+      #print(lines)
       raw_docs_df = pd.DataFrame(lines, columns=['text'])
       raw_docs_df.insert(loc = 0, column = 'modelname', value = modelname)
       raw_docs_df.insert(loc = 0, column = 'docID',     value = [x+1 for x in range(len(raw_docs_df.index))])
       raw_docs_df.to_csv(docfile, sep='\t', index=False, header=False)
+      print(raw_docs_df)
   else:
       # Preprocessed docs file is already in the 3-column format
       docfile = preprocessed_docs
@@ -220,11 +211,10 @@ if (model2csv):
   sys.stderr.write("Creating CSV files. Running: {}\n".format(cmd))
   os.system(cmd)
 
-  ## if raw_docs:
-      ## sys.stderr.write("Cleaning up {}\n".format(docfile))
-      ## docfile_fp.close()
+  if raw_docs:
+      sys.stderr.write("Cleaning up {}\n".format(docfile))
+      docfile_fp.close()
 
-"""
 
  
  
