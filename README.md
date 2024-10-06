@@ -313,3 +313,4 @@ We generally recommend creating three (or at most up to five) models with differ
 These recommendations are anecdotally consistent with what we have heard from a number of other frequent topic model practitioners. Crucially, the human curation process reduces the burden to view any particular model size as optimal; in general we tend to err mildly on the side of more rather than fewer top- ics since our process permits less-good topics to be discarded and fine-grained topics can be merged under a single label and description. 
 
 [Return to top](#toc)
+q
