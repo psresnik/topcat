@@ -1,5 +1,24 @@
 # Topic-Oriented Protocol for Content Analysis of Text (TOPCAT)
 
+## Table of Contents
+
+- [Citation](#citation)
+- [Overview](#overview)
+- [The software](#the-software)
+  - [Installing MALLET](#installing-mallet)
+  - [Installing the TOPCAT software](#installing-the-topcat-software)
+  - [Parameters you'll need to edit](#parameters-youll-need-to-edit)
+  - [Parameters you shouldn't need to edit](#parameters-you-shouldnt-need-to-edit)
+  - [Running the driver](#running-the-driver)
+  - [What the driver produces](#what-the-driver-produces)
+  - [Example run](#example-run)
+- [The human process](#the-human-process)
+  - [Selecting a model as the starting point for human curation](#selecting-a-model-as-the-starting-point-for-human-curation)
+  - [Curating the model to build a coding scheme](#curating-the-model-to-build-a-coding-scheme)
+  - [Obtaining representative documents ("verbatims") for a code](#obtaining-representative-documents-verbatims-for-a-code)
+  - [Coding the dataset](#coding-the-dataset)
+- [Guidance on topic model granularity](#guidance-on-topic-model-granularity)
+
 ## Citation
 
 If you use TOPCAT, kindly make sure to cite the following in any reports, presentations, or publications:
