@@ -1,49 +1,11 @@
-
-<div id="toc"/>
 # Topic-Oriented Protocol for Content Analysis of Text (TOPCAT)
 
-<!-- To generate table of contents:
-  pandoc -s --toc README.md -o foo.md
-
-  Add <div id="NAME"/> as appearing in the TOC at top if needed
-  Copy/paste the TOC here
--->
-
-
-
-
-*   [Citation](#citation) 
-
-*   [Overview](#overview)
-
-*   [The software](#software)
-	-	[Installing MALLET](#mallet)
-	-	[Installing the TOPCAT software](#installing)
-	-   [Parameters you'll need to edit](#parameters-edit)
-	-   [Parameters you shouldn't need to edit](#parameters-noedit)
-	-   [Running the driver](#driver)
-	-   [What the driver produces](#outfiles)
-	-   [Example run](#example)
-
-*   [The human process](#human)
-	-	[Selecting a model as the starting point for human curation](#model-selection)
-	-	[Curating the model to build a coding scheme](#curating)
-	-	[Obtaining representative documents ("verbatims") for a code](#verbatims)
-	-	[Coding the dataset](#coding)
-
-*	[Guidance on topic model granularity](#granularity)
-
-
-<div id="citation"/>
 ## Citation
 
 If you use TOPCAT, kindly make sure to cite the following in any reports, presentations, or publications:
 
 * Stub for citation
 
-[Return to top](#toc)
-
-<div id="overview"/>
 ## Overview
 
 Qualitative content analysis (QCA) includes a body of techniques that researchers use in order to gain an understanding of the content in bodies of text. These techniques are applied across a wide variety of use cases, including, for example, the analysis of open-ended survey responses, social media posts, or online reviews. A widely acknowledged problem with QCA, however, is that its methods are extremely labor intensive. For example, open-ended text responses can be an incredibly valuable source of insight in survey research, providing more nuance than traditional questions and revealing categories of response that were not originally expected, but survey researchers frequently avoid open-ends because the analysis represents too great an investment of resources. And when dealing with large quantities of text data, traditional QCA on the full dataset is simply out of the question.
@@ -63,29 +25,16 @@ TOPCAT is a (still-evolving) software-enabled process for combining the positive
 
 * **TOPCAT does not require learning a new software interface.** Qualitative analysts need only be able to deal with PDF and Excel.
 
-
 * **TOPCAT is extensible.** The human curation protocol requires only a topic-word distribution and a document-topic distribution (the standard outputs of "vanilla" topic modeling using LDA), either as CSV or .npy files. These should also be straightforward to obtain from other models such as the [Structural Topic Model](https://www.structuraltopicmodel.com/) or [short text topic models](https://stackoverflow.com/questions/62175452/topic-modeling-on-short-texts-python). 
 
-[Return to top](#toc)
-
-
-
-<div id="software"/>
 ## The software
 
-
-<div id="mallet"/>
 ### Installing MALLET
 
 Follow the directions at Shawn Graham, Scott Weingart, and Ian Milligan, "Getting Started with Topic Modeling and MALLET," Programming Historian 1 (2012), [https://doi.org/10.46430/phen0017](https://doi.org/10.46430/phen0017).
 
-[Return to top](#toc)
-
-
-<div id="installing"/>
 ### Installing the TOPCAT software
 
- 
 * Installing the environment
 	*  If you have `conda` already installed, you should be good to go. Skip this step.
 	
@@ -113,11 +62,6 @@ Follow the directions at Shawn Graham, Scott Weingart, and Ian Milligan, "Gettin
 
 	* Finally, install the [csvfix](https://wlbr.de/csvfix/) package via [this git repository](https://github.com/wlbr/csvfix). 
 
-[Return to top](#toc)
-
-
-
-<div id="parameters-edit"/>
 ### Parameters you'll need to edit
 
 Right now TOPCAT is driven by the `drivers.csh` shell script in the `code/src` directory. (It's `csh`, not `bash`, because I'm seriously old school. And yes, I already know `csh` is [widely reviled ](https://www.grymoire.com/Unix/CshTop10.txt)for shell scripting. But this particular script isn't all that fancy and it gets the job done.) 
@@ -126,7 +70,7 @@ Ultimately this driver will be rewritten as a python program that reads a `confi
 
 Here's a description of the variables you'll need to localize/customize and what they are for.
 
-__Installation variables__
+**Installation variables**
 
 |Variable|Description|
 |-----------|-----------|
@@ -135,8 +79,7 @@ __Installation variables__
 |PREPROC|            Full path to this package's NLP preprocessing script, e.g. `preprocessing_en.py` |
 |RUNMALLET|          Full path to this package's Mallet driver, i.e. `run_mallet.py` |
 
-__Analysis-specific variables__
-
+**Analysis-specific variables**
 
 |Variable|Description|
 |-----------|-----------|
@@ -148,11 +91,8 @@ __Analysis-specific variables__
 |OUTDIR|             Directory software will create to contain the files to be used during human curation|
 |GRANULARITIES|		 List of topic model sizes to try for potential starting-point models, e.g. `'(20 30 40)'`|
 
-With regard to `GRANULARITIES`, the driver script iterates through several (typically three to five) choices of topic model size. This value is typically denoted K in the topic modeling literature. See the [_Guidance on Topic Model Granularity_](#granularity) discussion below for recommendations about what values to use, which depends on the dataset.  Note that the `csh` syntax is a little persnickety so when you edit that veriable, make sure you only change the numbers, not the parentheses or single-quotes.
+With regard to `GRANULARITIES`, the driver script iterates through several (typically three to five) choices of topic model size. This value is typically denoted K in the topic modeling literature. See the [_Guidance on Topic Model Granularity_](#guidance-on-topic-model-granularity) discussion below for recommendations about what values to use, which depends on the dataset.  Note that the `csh` syntax is a little persnickety so when you edit that veriable, make sure you only change the numbers, not the parentheses or single-quotes.
 
-
-
-<div id="parameters-noedit"/>
 ### Parameters you shouldn't need to edit
 
 Finally, here's an explanation of some other variables that you shouldn't need to change.
@@ -164,7 +104,6 @@ Finally, here's an explanation of some other variables that you shouldn't need t
 |RAWDOCS|            Name for intermediate file with raw documents to be created automatically from the CSV file|
 |SEED|					 Random seed for MALLET runs (for reproducibility)
 
-<div id="driver"/>
 ### Running the driver
 
 The main flow in the driver is as follows:
@@ -177,7 +116,6 @@ To run the driver, simply execute `driver.csh` on the command line.
 
 Currently you may get some warnings but if things work properly the script should run all the way through. 
 
-<div id="outfiles">
 ### What the driver produces
 
 In the OUTDIR directory specified in the driver, you will find one subdirectory per granularity in GRANULARITIES. In each directory you will find the following three files to be used during the human curation process.
@@ -188,7 +126,6 @@ In the OUTDIR directory specified in the driver, you will find one subdirectory 
 |GRANULARITY_clouds.pdf| Cloud representation for each topic|
 |GRANULARITY_alldocs.xlsx| Document-topic distribution with one document per row (in the `text` column)|
 
-<div id="example">
 ### Example run
 
 Assuming that you have installed everything and created a version of the driver file with variables appropriately edited, you can run topic modeling for the example dataset in `example` simply by executing 
@@ -201,7 +138,6 @@ After it runs to completion you will find the output files suitable for the huma
 
 To confirm that things have run successfully, you can compare your outputs with the output material in `example_out`. The output might not be identical, because topic modeling has an element of randomness and your results could vary on a different machine even if you're using the default random seed value. However, for eachy granularity your topic models and the example outputs provided with the package are expected to be substantially similar. 
 
-
 <!--
 ### Getting your data ready 
 The code in this package assumes that the body of text your are analyzing is in a single CSV spreadsheet.  There should be a header row, and the header label for the column containing the items to be analyzed (which we uniformly refer to as "documents" throughout, following the conventions of topic modeling) is identified via the `TEXTCOL` parameter in the `config.ini` configuration file; for example, `TEXTCOL = text`.  
@@ -210,24 +146,12 @@ Optionally, the config file can specify a header label for a column with unique 
 
 Text encodings are a common issue when working with spreadsheets. In general, if your text is in UTF-8 things should work fine.  If you encounter encoding issues, we recommend [iconv](https://en.wikipedia.org/wiki/Iconv) as a generally workable solution.  Often `iconv -f windows-1252 -t utf-8 -c < infile > outfile` works well for converting Windows-based spreadsheets, where the `-c` flag says to discard any non-convertible characters.-->
 
-
-[Return to top](#toc)
-
-
-<div id="human"/>
 ## The human process
 
-
-<div id="model-selection"/>
 ### Selecting a model as the starting point for human curation
-
 
 See [these instructions for model selection](instructions/model_selection.pdf).
 
-[Return to top](#toc)
-
-
-<div id="curating"/>
 ### Curating the model to build a coding scheme
 
 There are two steps in model curation. 
@@ -238,18 +162,10 @@ There are two steps in model curation.
 
 The end result of this curation process is a set of categories and descriptions that have been guided via an automatic, scalable process that is bottom-up and thus minimizes human bias, while still retaining human quality control. 
 
-[Return to top](#toc)
-
-
-<div id="verbatims"/>
 ### Obtaining representative documents ("verbatims") for a code 
 
 It is often useful to select a set of good examples for codes in a coding scheme. This is straightforward using the files already created by the TOPCAT process.  In the materials used for human curation, each automatically created topic was accompanied by a set of its "top" documents.  These can be considered a set of ranked candidates for verbatims for the code created using that topic.
 
-[Return to top](#toc)
-
-
-<div id="coding"/>
 ### Coding the dataset  
 
 The TOPCAT protocol is currently designed for high-quality, efficient development of a coding scheme, not for automatically coding documents. Automated coding is an active subject of current research, e.g. see:
@@ -289,11 +205,6 @@ Voila!  You now have a spreadsheet containing the text, and for each code, a col
 
 *To consider: provide instructions for importing the model-based coding into NVivo for review/correction?*
 
-[Return to top](#toc)
-
-
-
-<div id="granularity"/>
 ## Guidance on topic model granularity
 
 Topic models require you to specify in advance the number of categories you would like to automatically create, which we will refer to as the *granularity* of the model; in the literature this value is conventionally referred to as *K*.  
@@ -311,6 +222,3 @@ We generally recommend creating three (or at most up to five) models with differ
 * For 10000- to-200000 (K=75,100,150)
 
 These recommendations are anecdotally consistent with what we have heard from a number of other frequent topic model practitioners. Crucially, the human curation process reduces the burden to view any particular model size as optimal; in general we tend to err mildly on the side of more rather than fewer top- ics since our process permits less-good topics to be discarded and fine-grained topics can be merged under a single label and description. 
-
-[Return to top](#toc)
-q
