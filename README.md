@@ -82,22 +82,11 @@ Before installing TOPCAT, you need:
 **Step 1: Clone the repository**
 
 ```bash
-git clone https://github.com/psresnik/topcat.git====
+git clone https://github.com/psresnik/topcat.git
 cd topcat
 ```
 
-**Step 2: Set up configuration**
-
-```bash
-# Copy the template configuration file
-cp templates/config_template.ini config.ini
-
-# Edit config.ini and update these two paths for your system:
-#   myhome = /path/to/your/topcat/installation/directory  
-#   topcatdir = /path/to/your/topcat/repository
-```
-
-**Step 3: Create conda environments**
+**Step 2: Create conda environments**
 
 ```bash
 # Create the topics environment (for NLP preprocessing and MALLET)
@@ -107,7 +96,7 @@ conda env create -f code/topics.yml
 conda env create -f code/topic_curation.yml
 ```
 
-**Step 4: Install spaCy language model**
+**Step 3: Install spaCy language model**
 
 ```bash
 # Activate the topics environment and download English language model
@@ -116,7 +105,7 @@ python -m spacy download en_core_web_sm
 conda deactivate
 ```
 
-**Step 5: Build csvfix dependency**
+**Step 4: Build csvfix dependency**
 
 ```bash
 # Download and build csvfix from source
@@ -125,6 +114,19 @@ unzip csvfix.zip
 cd csvfix-master
 make mac  # Use 'make' for Linux
 cd ..
+```
+
+**Step 5: Set up configuration**
+
+```bash
+# Copy the template configuration file
+cp templates/config_template.ini config.ini
+
+# Edit config.ini and update these paths for your system:
+#   topcatdir = /path/to/your/topcat/repository (this directory)
+#   malletdir = /path/to/your/mallet/installation  
+#   csvfixdir = /path/to/your/csvfix-master (directory containing bin/)
+#   rootdir = /path/where/analysis/output/will/go
 ```
 
 **Step 6: Validate installation**
@@ -144,10 +146,12 @@ TOPCAT uses a Python driver that reads parameters from `config.ini`. The templat
 
 |Parameter|Description|
 |-----------|-----------|
-|`myhome`|Your TOPCAT installation directory (where MALLET and csvfix are installed)|
 |`topcatdir`|Directory containing this TOPCAT repository|
+|`malletdir`|Directory containing your MALLET installation|
+|`csvfixdir`|Directory containing your csvfix installation (with bin/ subdirectory)|
+|`rootdir`|Directory where analysis output files will be created|
 |`csv`|Full path to your CSV file containing documents to analyze|
-|`textcol`|Column number containing your text documents (0-indexed: first column = 0)|
+|`textcol`|Column number containing your text documents (1-indexed: first column = 1)|
 |`modelname`|Name for your analysis (used in output filenames)|
 |`granularities`|Topic model sizes to try, e.g. `10 20 30`|
 
