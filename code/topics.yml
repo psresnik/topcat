@@ -1,10 +1,10 @@
 name: topics
 channels:
-  - defaults
+  - defaults  
   - conda-forge
 dependencies:
-  - spacy
-  - wordcloud
-  - traceback-with-variables
-  - pandas
-prefix: /Users/resnik/opt/anaconda3/envs/topics
+  - python=3.12.11
+  - spacy=3.8.2
+  - wordcloud=1.9.4
+  - traceback-with-variables=2.2.0
+  - pandas=2.3.3

@@ -3,6 +3,7 @@
 ## Table of Contents
 
 <!--
+
 - [Citation](#citation)
 - [Overview](#overview)
 -->
@@ -67,86 +68,122 @@ Follow the directions at Shawn Graham, Scott Weingart, and Ian Milligan, "Gettin
 
 ### Installing the TOPCAT code
 
-* Installing the environment
-	*  If you have `conda` already installed, you should be good to go. Skip this step.
-	
-	*  If not, we recommend that you install [miniconda](https://docs.conda.io/projects/miniconda/en/latest/index.html#quick-command-line-install) unless for other reasons you'd prefer to do a full [anaconda installation](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html)
+#### Prerequisites
 
-* Installing TOPCAT
-	* Do a `git clone` for this TOPCAT package
+Before installing TOPCAT, you need:
 
-* Installing necessary packages
-	* For reference, see the conda documentation on [Creating an environment from an environment.yml file](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file)
-	
-	* At the moment, we have two separate conda environments that need to be installed. These will be combined into just one when we make the move to a python driver. 
-		* The `topics` package:
-		
-			* Edit the `prefix` variable at the end of [code/topics.yml](code/topics.yml) so that it points to wherever you want the `topics` environment to live
+- **conda or miniconda**: If you don't have conda installed, install [miniconda](https://docs.conda.io/projects/miniconda/en/latest/index.html#quick-command-line-install) or full [anaconda](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html)
+- **System compiler tools**: Required for building csvfix dependency
+  - **macOS**: Install Xcode command line tools: `xcode-select --install`
+  - **Linux**: Install build-essential package
 
-		
-			* Excecute `conda env create -f code/topics.yml`
+#### Installation Steps
 
-		* The `topic_curation` package:
-		
-			* Edit the `prefix` variable at the end of [code/topic_curation.yml](code/topic_curation.yml) so that it points to wherever you want the `topic_curation` environment to live
-			
-			* Execute `conda env create -f code/topic_curation.yml`
+**Step 1: Clone the repository**
 
-	* Finally, install the [csvfix](https://wlbr.de/csvfix/) package via [this git repository](https://github.com/wlbr/csvfix). 
+```bash
+git clone [REPOSITORY_URL]
+cd topcat
+```
 
-### Parameters you'll need to edit
+**Step 2: Set up configuration**
 
-Right now TOPCAT is driven by the `drivers.csh` shell script in the `code/src` directory. (It's `csh`, not `bash`, because I'm seriously old school. And yes, I already know `csh` is [widely reviled ](https://www.grymoire.com/Unix/CshTop10.txt)for shell scripting. But this particular script isn't all that fancy and it gets the job done.) 
+```bash
+# Copy the template configuration file
+cp templates/config_template.ini config.ini
 
-Ultimately this driver will be rewritten as a python program that reads a `config.ini` configuration file, but for now parameters for the runs are established using environment variable assignments at the top of the script. That means you'll want a separate copy of the script for each dataset you analyze.
+# Edit config.ini and update these two paths for your system:
+#   myhome = /path/to/your/topcat/installation/directory  
+#   topcatdir = /path/to/your/topcat/repository
+```
 
-Here's a description of the variables you'll need to localize/customize and what they are for.
+**Step 3: Create conda environments**
 
-**Installation variables**
+```bash
+# Create the topics environment (for NLP preprocessing and MALLET)
+conda env create -f code/topics.yml
 
-|Variable|Description|
+# Create the topic curation environment (for generating human curation materials)
+conda env create -f code/topic_curation.yml
+```
+
+**Step 4: Install spaCy language model**
+
+```bash
+# Activate the topics environment and download English language model
+source /opt/anaconda3/bin/activate topics
+python -m spacy download en_core_web_sm
+conda deactivate
+```
+
+**Step 5: Build csvfix dependency**
+
+```bash
+# Download and build csvfix from source
+curl -L https://github.com/wlbr/csvfix/archive/master.zip -o csvfix.zip
+unzip csvfix.zip
+cd csvfix-master
+make mac  # Use 'make' for Linux
+cd ..
+```
+
+**Step 6: Validate installation**
+
+```bash
+# Test that everything is working
+python validate_installation.py
+```
+
+If validation passes, you're ready to use TOPCAT! 
+
+### Configuration
+
+TOPCAT uses a Python driver that reads parameters from `config.ini`. The template configuration file you copied during installation contains all necessary parameters with detailed comments.
+
+**Key parameters you'll typically need to edit:**
+
+|Parameter|Description|
 |-----------|-----------|
-|MALLETDIR|          Installed directory for MALLET (contains the MALLET `LICENSE` file)|
-|TOPCATDIR|			 Directory with the TOPCAT package (contains this README.md file)
-|PREPROC|            Full path to this package's NLP preprocessing script, e.g. `preprocessing_en.py` |
-|RUNMALLET|          Full path to this package's Mallet driver, i.e. `run_mallet.py` |
+|`myhome`|Your TOPCAT installation directory (where MALLET and csvfix are installed)|
+|`topcatdir`|Directory containing this TOPCAT repository|
+|`csv`|Full path to your CSV file containing documents to analyze|
+|`textcol`|Column number containing your text documents (0-indexed: first column = 0)|
+|`modelname`|Name for your analysis (used in output filenames)|
+|`granularities`|Topic model sizes to try, e.g. `10 20 30`|
 
-**Analysis-specific variables**
+**Advanced parameters (usually don't need to change):**
 
-|Variable|Description|
+|Parameter|Description|
 |-----------|-----------|
-|ROOTDIR|            Your main directory for analysis of this specific dataset|
-|CSV|                Full path to the input CSV file containing the documents|
-|TEXTCOL|            Column number in the CSV file containing the documents (first column is numbered 0, not 1!) |
-|MODELNAME|          Name to use for the models|
-|DATADIR|            Directory software will create to contain topic modeling output|
-|OUTDIR|             Directory software will create to contain the files to be used during human curation|
-|GRANULARITIES|		 List of topic model sizes to try for potential starting-point models, e.g. `'(20 30 40)'`|
+|`stoplist`|Stopwords file (defaults to MALLET's English stoplist)|
+|`numiterations`|MALLET training iterations (default: 1000)|
+|`maxdocs`|Maximum documents per topic in curation materials (default: 100)|
+|`seed`|Random seed for reproducible results (default: 13)|
 
-With regard to `GRANULARITIES`, the driver script iterates through several (typically three to five) choices of topic model size. This value is typically denoted K in the topic modeling literature. See the [_Guidance on Topic Model Granularity_](#guidance-on-topic-model-granularity) discussion below for recommendations about what values to use, which depends on the dataset.  Note that the `csh` syntax is a little persnickety so when you edit that veriable, make sure you only change the numbers, not the parentheses or single-quotes.
-
-### Parameters you shouldn't need to edit
-
-Finally, here's an explanation of some other variables that you shouldn't need to change.
-
-|Variable|Description|
-|-----------|-----------|
-|STOPLIST|           Stoplist (words to ignore), one word per line (defaults to MALLET's stoplist)|
-|NUMITERATIONS|      Number of iterations to run topic model (defaults to 1000)|
-|RAWDOCS|            Name for intermediate file with raw documents to be created automatically from the CSV file|
-|SEED|					 Random seed for MALLET runs (for reproducibility)
+For the `granularities` parameter, choose topic model sizes based on your dataset size. See [Guidance on Topic Model Granularity](#guidance-on-topic-model-granularity) below for recommendations.
 
 ### Running the driver
 
-The main flow in the driver is as follows:
+The TOPCAT pipeline performs the following steps:
 
-* Extract and clean documents from the specified column in the CSV file
-* Run run_mallet.py to build a topic model on NLP-preprocessed text for each value of NUMTOPICS
-* For each model create the materials used in the TOPCAT human curation protocol 
+* Extract and clean documents from your CSV file
+* Apply NLP preprocessing with spaCy (tokenization, phrase detection, stopword removal)
+* Train topic models using MALLET for each specified granularity
+* Generate human curation materials (Excel files, PDF word clouds)
 
-To run the driver, simply execute `driver.csh` on the command line. 
+**To run TOPCAT:**
 
-Currently you may get some warnings but if things work properly the script should run all the way through. 
+```bash
+python driver.py config.ini
+```
+
+**What to expect:**
+
+- Processing time: 10-60 minutes depending on dataset size and number of topics
+- Progress indicators: You'll see preprocessing progress and MALLET training updates
+- Output: Files will be created in your configured output directory
+
+**Alternative method**: The original shell script is still available: `./code/driver.csh` 
 
 ### What the driver produces
 
@@ -160,15 +197,26 @@ In the OUTDIR directory specified in the driver, you will find one subdirectory 
 
 ### Example run
 
-Assuming that you have installed everything and created a version of the driver file with variables appropriately edited, you can run topic modeling for the example dataset in `example` simply by executing 
+The default `config.ini` (created from the template) is configured to run on the provided example dataset. This dataset contains 2000 public comments submitted to the U.S. Food and Drug Administration (FDA) in response to a 2021 request for public comments about emergency use authorization for a child COVID-19 vaccine. 
 
-`code/driver.csh` 
+**To run the example:**
+```bash
+python driver.py config.ini
+```
 
-with no arguments. This will run through the topic modeling process for a sample of 2000 public comments (out of ~130,000) submitted to the U.S. Food and Drug Administration (FDA) in response to a 2021 request for public comments about emergency use authorization for a child COVID-19 vaccine. The original comments are publicly available [here](https://www.regulations.gov/document/FDA-2021-N-1088-0001) and [straightforward to download](https://www.regulations.gov/bulkdownload). Note that some comments can contain upsetting language or content.
+This will process the example dataset and create topic models with 10, 20, and 30 topics (as specified in the default configuration).
 
-After it runs to completion you will find the output files suitable for the human curation process in an `example/out` subdirectory. Intermediate modeling output (including the preprocessed version of the corpus) can be found in `example/data`.
+**Expected outputs:**
 
-To confirm that things have run successfully, you can compare your outputs with the output material in `example_out`. The output might not be identical, because topic modeling has an element of randomness and your results could vary on a different machine even if you're using the default random seed value. However, for eachy granularity your topic models and the example outputs provided with the package are expected to be substantially similar. 
+- **Processing time**: ~15-30 minutes for the example dataset
+- **Output location**: In your configured output directory (default: `analysis/out/`)
+- **Files created**: Excel files and PDF word clouds for human curation
+
+**Validation**: You can compare your results with the reference output in the `example/` directory. Results won't be identical due to the randomness in topic modeling, but topic themes should be similar.
+
+**Troubleshooting**: If you encounter issues, see [INSTALL_TROUBLESHOOTING.md](INSTALL_TROUBLESHOOTING.md) for solutions to common problems.
+
+*Note: The original comments are publicly available [here](https://www.regulations.gov/document/FDA-2021-N-1088-0001). Some comments may contain upsetting language or content.* 
 
 <!--
 ### Getting your data ready 
