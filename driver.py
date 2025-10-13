@@ -8,7 +8,7 @@ def load_config(config_file):
 
     # Declare parameters as global
     # Yes, this is ugly! I'm being quick and dirty.
-    global myhome, malletdir, topcatdir, preproc, runmallet
+    global malletdir, topcatdir, csvfixdir, preproc, runmallet
     global rootdir, csv, textcol, modelname, datadir, outdir, granularities
     global workdir, rawdocs, preprocdir, stoplist, numiterations, maxdocs, seed
     global debug
@@ -25,9 +25,9 @@ def load_config(config_file):
         print("NOT IN DEBUGGING MODE")
     
     # Load installation variables
-    myhome    = config.get('variables', 'myhome')
     malletdir = config.get('variables', 'malletdir')
     topcatdir = config.get('variables', 'topcatdir')
+    csvfixdir = config.get('variables', 'csvfixdir')
     preproc   = config.get('variables', 'preproc')
     runmallet = config.get('variables', 'runmallet')
 
@@ -57,8 +57,8 @@ def load_config(config_file):
     maxdocs       = config.get('variables', 'maxdocs')
     seed          = config.get('variables', 'seed')
 
-    # Add csvfix binary directory to PATH - Updated path for fresh user test
-    csvfix_path = os.path.join(myhome, "csvfix", "csvfix", "bin")
+    # Add csvfix binary directory to PATH
+    csvfix_path = os.path.join(csvfixdir, "bin")
     if os.path.exists(csvfix_path):
         os.environ["PATH"] += os.pathsep + csvfix_path
         print(f"Added csvfix to PATH: {csvfix_path}")
@@ -84,9 +84,9 @@ if __name__ == "__main__":
 
     # DEBUG
     if (debug):
-        print("myhome =\t {}".format(myhome))
         print("malletdir =\t {}".format(malletdir))
         print("topcatdir =\t {}".format(topcatdir))
+        print("csvfixdir =\t {}".format(csvfixdir))
         print("preproc =\t {}".format(preproc))
         print("runmallet =\t {}".format(runmallet))
         print("rootdir =\t {}".format(rootdir))
