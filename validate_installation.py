@@ -72,11 +72,11 @@ def main():
         config = configparser.ConfigParser()
         config.read(config_file)
         
-        myhome = config.get('variables', 'myhome')
         malletdir = config.get('variables', 'malletdir') 
         topcatdir = config.get('variables', 'topcatdir')
+        csvfixbin = config.get('variables', 'csvfixbin')
         
-        print_status(f"Configuration loaded: myhome = {myhome}")
+        print_status(f"Configuration loaded from {config_file}")
         
     except Exception as e:
         print_status(f"Configuration file error: {str(e)}", "FAIL")
@@ -91,7 +91,7 @@ def main():
         all_checks_passed = False
     
     # Check csvfix
-    csvfix_bin = os.path.join(myhome, "csvfix", "csvfix", "bin", "csvfix") 
+    csvfix_bin = os.path.join(csvfixbin, "bin", "csvfix") 
     if not check_file_exists(csvfix_bin, "csvfix binary"):
         all_checks_passed = False
     
