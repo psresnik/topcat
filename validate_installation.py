@@ -11,13 +11,14 @@ a quick test with the example dataset. It checks all major components:
 - Topic modeling
 - Output file generation
 
-Usage: python validate_installation.py
+Usage: python validate_installation.py [--config CONFIG_FILE]
 """
 
 import os
 import sys
 import subprocess
 import configparser
+import argparse
 from pathlib import Path
 
 def print_status(message, status="INFO"):
@@ -50,12 +51,18 @@ def run_command(command, description, check_return_code=True):
         return False
 
 def main():
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Validate TOPCAT installation')
+    parser.add_argument('--config', default='./config.ini', 
+                        help='Configuration file (default: ./config.ini)')
+    args = parser.parse_args()
+    
     print("="*60)
     print("TOPCAT Installation Validation")
     print("="*60)
     
-    # Check if config.ini exists
-    config_file = "config.ini"
+    # Check if config file exists
+    config_file = args.config
     if not check_file_exists(config_file, "Configuration file"):
         print_status("Please copy templates/config_template.ini to config.ini and edit paths", "FAIL")
         return False
@@ -139,7 +146,7 @@ def main():
     if all_checks_passed:
         print_status("All validation tests PASSED!", "PASS")
         print("\nYour TOPCAT installation appears to be working correctly.")
-        print("You can now run: python driver.py config.ini")
+        print("You can now run: python driver.py --config config.ini")
         print("\nExpected processing time: 10 minutes for example dataset")
         print("Expected output: Files in your configured output directory")
         return True

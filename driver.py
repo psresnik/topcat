@@ -2,6 +2,7 @@ import configparser
 import os
 import sys
 import time
+import argparse
 
 def load_config(config_file):
 
@@ -72,12 +73,14 @@ def load_config(config_file):
 ################################################################
 if __name__ == "__main__":
 
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Run TOPCAT topic modeling pipeline')
+    parser.add_argument('--config', default='./config.ini',
+                        help='Configuration file (default: ./config.ini)')
+    args = parser.parse_args()
+
     # Read config
-    if len(sys.argv) > 1: 
-        load_config(sys.argv[1])
-    else:
-        print("Usage: {} <CONFIG_FILE>".format(sys.argv[0]))
-        sys.exit(1)
+    load_config(args.config)
 
     # DEBUG
     if (debug):

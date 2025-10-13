@@ -82,7 +82,7 @@ Before installing TOPCAT, you need:
 **Step 1: Clone the repository**
 
 ```bash
-git clone [REPOSITORY_URL]
+git clone https://github.com/psresnik/topcat.git====
 cd topcat
 ```
 
@@ -174,7 +174,9 @@ The TOPCAT pipeline performs the following steps:
 **To run TOPCAT:**
 
 ```bash
-python driver.py config.ini
+python driver.py --config config.ini
+# or simply (config.ini is the default):
+python driver.py
 ```
 
 **What to expect:**
@@ -201,7 +203,9 @@ The default `config.ini` (created from the template) is configured to run on the
 
 **To run the example:**
 ```bash
-python driver.py config.ini
+python driver.py --config config.ini
+# or simply (config.ini is the default):
+python driver.py
 ```
 
 This will process the example dataset and create topic models with 10, 20, and 30 topics (as specified in the default configuration).
