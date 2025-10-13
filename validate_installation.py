@@ -74,7 +74,7 @@ def main():
         
         malletdir = config.get('variables', 'malletdir') 
         topcatdir = config.get('variables', 'topcatdir')
-        csvfixbin = config.get('variables', 'csvfixbin')
+        csvfixdir = config.get('variables', 'csvfixdir')
         
         print_status(f"Configuration loaded from {config_file}")
         
@@ -91,7 +91,7 @@ def main():
         all_checks_passed = False
     
     # Check csvfix
-    csvfix_bin = os.path.join(csvfixbin, "bin", "csvfix") 
+    csvfix_bin = os.path.join(csvfixdir, "bin", "csvfix") 
     if not check_file_exists(csvfix_bin, "csvfix binary"):
         all_checks_passed = False
     
