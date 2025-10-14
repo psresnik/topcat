@@ -2,14 +2,13 @@
 """
 TOPCAT Installation Validation Script
 
-This script tests whether TOPCAT has been installed correctly by running
-a quick test with the example dataset. It checks all major components:
+This script tests whether TOPCAT has been installed correctly by checking
+all major components:
 - Configuration file setup
-- Conda environments  
+- TOPCAT conda environment  
 - External dependencies (MALLET, csvfix)
-- NLP preprocessing
-- Topic modeling
-- Output file generation
+- NLP preprocessing libraries
+- Required Python packages
 
 Usage: python validate_installation.py [--config CONFIG_FILE]
 """
@@ -64,7 +63,7 @@ def main():
     # Check if config file exists
     config_file = args.config
     if not check_file_exists(config_file, "Configuration file"):
-        print_status("Please copy templates/config_template.ini to config.ini and edit paths", "FAIL")
+        print_status(f"Please copy templates/config_template.ini to {config_file} and edit paths", "FAIL")
         return False
     
     # Read configuration
@@ -117,17 +116,37 @@ def main():
     print("FUNCTIONAL TESTS")
     print("="*60)
     
-    # Test conda environments
-    if not run_command("conda env list | grep 'topics'", "Topics conda environment"):
+    # Test that we're in the right conda environment
+    try:
+        import spacy
+        nlp = spacy.load("en_core_web_sm")
+        print_status("spaCy language model", "PASS")
+    except ImportError:
+        print_status("spaCy not available - make sure you're in the topcat environment", "FAIL")
         all_checks_passed = False
-        
-    if not run_command("conda env list | grep 'topic_curation'", "Topic curation conda environment"):
+    except OSError:
+        print_status("spaCy model 'en_core_web_sm' not found - run: python -m spacy download en_core_web_sm", "FAIL")
         all_checks_passed = False
     
-    # Test spaCy model in topics environment
-    spacy_test = "source /opt/anaconda3/bin/activate topics && python -c 'import spacy; nlp = spacy.load(\"en_core_web_sm\"); print(\"spaCy model loaded successfully\")'"
-    if not run_command(spacy_test, "spaCy language model"):
-        all_checks_passed = False
+    # Test other required packages
+    required_packages = [
+        ('pandas', 'pandas'),
+        ('numpy', 'numpy'), 
+        ('matplotlib', 'matplotlib'),
+        ('wordcloud', 'wordcloud'),
+        ('xlsxwriter', 'xlsxwriter'),
+        ('configargparse', 'configargparse'),
+        ('kneed', 'kneed'),
+        ('tqdm', 'tqdm')
+    ]
+    
+    for package_name, import_name in required_packages:
+        try:
+            __import__(import_name)
+            print_status(f"{package_name} package", "PASS")
+        except ImportError:
+            print_status(f"{package_name} package not available", "FAIL")
+            all_checks_passed = False
     
     # Test MALLET
     mallet_test = f"{mallet_bin} --help"
@@ -146,7 +165,7 @@ def main():
     if all_checks_passed:
         print_status("All validation tests PASSED!", "PASS")
         print("\nYour TOPCAT installation appears to be working correctly.")
-        print("You can now run: python driver.py --config config.ini")
+        print(f"You can now run: python code/driver.py --config {config_file}")
         print("\nExpected processing time: 10 minutes for example dataset")
         print("Expected output: Files in your configured output directory")
         return True
@@ -154,9 +173,10 @@ def main():
         print_status("Some validation tests FAILED", "FAIL") 
         print("\nPlease check INSTALL_TROUBLESHOOTING.md for solutions")
         print("Common issues:")
+        print("  - Not running in topcat environment (run: conda activate topcat)")
         print("  - Missing spaCy language model (run: python -m spacy download en_core_web_sm)")
-        print("  - Incorrect paths in config.ini")
-        print("  - Conda environments not created properly")
+        print(f"  - Incorrect paths in {config_file}")
+        print("  - Missing Python packages (recreate environment: conda env create -f code/topcat.yml)")
         print("  - External dependencies not built correctly")
         return False
 

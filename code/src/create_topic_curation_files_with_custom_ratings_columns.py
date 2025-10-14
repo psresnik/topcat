@@ -7,8 +7,8 @@ import pandas as pd
 import xlsxwriter
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
-from PyPDF2 import PdfFileMerger
-from PyPDF2 import PdfFileWriter, PdfFileReader
+from PyPDF2 import PdfMerger
+from PyPDF2 import PdfWriter, PdfReader
 import io
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
@@ -353,14 +353,14 @@ def write_pdf_with_title(titlestring, pdf_in, pdf_out):
     can.save()
     #move to the beginning of the StringIO buffer
     packet.seek(0)
-    new_pdf = PdfFileReader(packet)
+    new_pdf = PdfReader(packet)
     # read your existing PDF
-    existing_pdf = PdfFileReader(open(pdf_in, "rb"))
-    output = PdfFileWriter()
+    existing_pdf = PdfReader(open(pdf_in, "rb"))
+    output = PdfWriter()
     # add the "watermark" (which is the new pdf) on the existing page
-    page = existing_pdf.getPage(0)
-    page.mergePage(new_pdf.getPage(0))
-    output.addPage(page)
+    page = existing_pdf.pages[0]
+    page.merge_page(new_pdf.pages[0])
+    output.add_page(page)
     # finally, write "output" to a real file
     outputStream = open(pdf_out, "wb")
     output.write(outputStream)
@@ -369,7 +369,7 @@ def write_pdf_with_title(titlestring, pdf_in, pdf_out):
 def combine_pdfs(pdfs, outfile_name):
     # Solution to merging PDFs into a multi-page PDF document
     # https://stackoverflow.com/questions/3444645/merge-pdf-files
-    merger = PdfFileMerger()
+    merger = PdfMerger()
     sys.stderr.write("Merging clouds into {}\n".format(outfile_name))
     for pdf in pdfs:
         merger.append(pdf)

@@ -51,7 +51,7 @@
  * **TOPCAT uses [MALLET](https://mimno.github.io/Mallet/index), the most mature and widely used topic modeling package.** An excellent set of instructions for installing   and running MALLET (both Mac and Windows), friendly to non-technical people, already exists [here](https://programminghistorian.org/en/lessons/topic-modeling-and-mallet).
  
  * **TOPCAT's software is straightforward to install and use for anyone who is capable of running a Python program.**  Currently for Mac, but instructions for Windows are coming. 
-   - At the moment, using TOPCAT involves running a top-level "driver" shell script. This will be converted to a top-level Python program that invokes the relevant pieces of software.
+   - TOPCAT provides a Python driver (`code/driver.py`) that orchestrates the complete analysis workflow with a single command.
  
  * **TOPCAT does not require learning a new software interface.** Qualitative analysts need only be able to deal with PDF and Excel.
  
@@ -86,23 +86,19 @@ git clone https://github.com/psresnik/topcat.git
 cd topcat
 ```
 
-**Step 2: Create conda environments**
+**Step 2: Create conda environment**
 
 ```bash
-# Create the topics environment (for NLP preprocessing and MALLET)
-conda env create -f code/topics.yml
-
-# Create the topic curation environment (for generating human curation materials)
-conda env create -f code/topic_curation.yml
+# Create the topcat environment (includes all dependencies)
+conda env create -f code/topcat.yml
 ```
 
 **Step 3: Install spaCy language model**
 
 ```bash
-# Activate the topics environment and download English language model
-source /opt/anaconda3/bin/activate topics
+# Activate the topcat environment and download English language model
+conda activate topcat
 python -m spacy download en_core_web_sm
-conda deactivate
 ```
 
 **Step 4: Build csvfix dependency**
@@ -132,7 +128,8 @@ cp templates/config_template.ini config.ini
 **Step 6: Validate installation**
 
 ```bash
-# Test that everything is working
+# Activate the topcat environment and test that everything is working
+conda activate topcat
 python validate_installation.py
 ```
 
@@ -163,8 +160,17 @@ TOPCAT uses a Python driver that reads parameters from `config.ini`. The templat
 |`numiterations`|MALLET training iterations (default: 1000)|
 |`maxdocs`|Maximum documents per topic in curation materials (default: 100)|
 |`seed`|Random seed for reproducible results (default: 13)|
+|`debug`|Enable debug mode (default: false)|
 
 For the `granularities` parameter, choose topic model sizes based on your dataset size. See [Guidance on Topic Model Granularity](#guidance-on-topic-model-granularity) below for recommendations.
+
+**⚠️ Important Note about Re-running Analysis:**
+
+When `debug = true` in your configuration file, TOPCAT will automatically overwrite existing model directories from previous runs. This allows for easy re-running during development and testing. However, be aware that:
+
+- Re-running the same analysis will replace all previous results
+- Each topic granularity (10, 20, 30, etc.) has separate directories, so they won't interfere with each other
+- In production use, consider setting `debug = false` to prevent accidental overwrites
 
 ### Running the driver
 
@@ -178,9 +184,13 @@ The TOPCAT pipeline performs the following steps:
 **To run TOPCAT:**
 
 ```bash
-python driver.py --config config.ini
+# Test your configuration first with dry-run mode
+python code/driver.py --dry-run --config config.ini
+
+# Run the full analysis
+python code/driver.py --config config.ini
 # or simply (config.ini is the default):
-python driver.py
+python code/driver.py
 ```
 
 **What to expect:**
@@ -207,9 +217,9 @@ The default `config.ini` (created from the template) is configured to run on the
 
 **To run the example:**
 ```bash
-python driver.py --config config.ini
+python code/driver.py --config config.ini
 # or simply (config.ini is the default):
-python driver.py
+python code/driver.py
 ```
 
 This will process the example dataset and create topic models with 10, 20, and 30 topics (as specified in the default configuration).

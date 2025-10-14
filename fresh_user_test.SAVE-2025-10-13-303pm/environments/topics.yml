@@ -1,9 +1,0 @@
-name: fresh_user_topics_test
-channels:
-  - defaults
-  - conda-forge
-dependencies:
-  - spacy
-  - wordcloud
-  - traceback-with-variables
-  - pandas

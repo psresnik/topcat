@@ -8,10 +8,10 @@ This guide covers potential issues during TOPCAT installation.
 
 **Problem**: `preprocessing_en.py` fails with "Can't find model '`en_core_web_sm`'"
 
-**Solution**: After creating the `topics` environment:
+**Solution**: After creating the `topcat` environment:
 
 ```bash
-source /opt/anaconda3/bin/activate topics
+conda activate topcat
 python -m spacy download en_core_web_sm
 ```
 
@@ -58,8 +58,12 @@ your_topcat_directory/csvfix/csvfix/bin/csvfix
 
 **Problem**: "Directory already exists" errors during repeat runs
 
-**Solution**: MALLET expects certain directories to not exist. Clean up between runs:
+**Solution**: Use debug mode for automatic cleanup, or clean up manually:
 
+**Automatic (recommended)**:
+Set `debug = true` in your config.ini - the driver will automatically clean up existing directories
+
+**Manual**:
 ```bash
 rm -rf your_analysis_directory/data/modeling/model_*
 ```
@@ -108,13 +112,24 @@ iconv -f windows-1252 -t utf-8 -c input.csv > output.csv
 
 ## Installation Validation
 
-### Quick Test
+### Step 1: Validation Script
 
-Run the validation script with the example dataset:
+Run the validation script to test all dependencies:
 
 ```bash
+conda activate topcat
 python validate_installation.py
 ```
+
+### Step 2: Dry-Run Test
+
+Test your configuration without running the full analysis:
+
+```bash
+python code/driver.py --dry-run
+```
+
+This shows what would be done without actually executing, including timing estimates.
 
 ### Expected Output Files
 

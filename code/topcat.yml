@@ -1,0 +1,28 @@
+name: topcat
+channels:
+  - defaults  
+  - conda-forge
+dependencies:
+  # Base Python
+  - python=3.12
+  
+  # NLP and topic modeling
+  - spacy
+  - traceback-with-variables
+  
+  # Data processing
+  - pandas
+  - numpy
+  
+  # Visualization and output
+  - matplotlib
+  - wordcloud
+  - xlsxwriter
+  - pypdf2
+  - reportlab
+  
+  # Utilities
+  - pip
+  - configargparse
+  - kneed
+  - tqdm

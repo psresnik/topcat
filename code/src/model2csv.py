@@ -192,8 +192,8 @@ def convert_mallet(modeldir, docfile, vocabfile, word_topics_file, document_topi
         weights = group_df['weight'].values
         total   = weights.sum()
         probs   = weights / total
-        print("DEBUG: weights has length {}, probs has length {}, betaT_df is...".format(len(weights),len(probs)))
-        print(betaT_df)
+        # print("DEBUG: weights has length {}, probs has length {}, betaT_df is...".format(len(weights),len(probs)))
+        # print(betaT_df)
         betaT_df.loc[:,"Topic {}".format(topicnum+1)] = probs  # https://re-thought.com/how-to-add-new-columns-in-a-dataframe-in-pandas/
     betaT_df.to_csv(word_topics_file, index=False)
     sys.stderr.write("Wrote {}\n".format(word_topics_file))

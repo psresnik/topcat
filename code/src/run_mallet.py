@@ -138,7 +138,7 @@ if raw_docs is not None:
 
 # Import preprocessed documents 
 importfile = "{}/{}.mallet".format(workdir, modelname)
-template   = "{}/mallet import-file --input {} --output {} --token-regex '\S+' --preserve-case --keep-sequence"
+template   = "{}/mallet import-file --input {} --output {} --token-regex '\\S+' --preserve-case --keep-sequence"
 cmd        = template.format(mallet_bin, preprocessed_docs, importfile)
 sys.stderr.write("Running: {}\n".format(cmd))
 os.system(cmd)
