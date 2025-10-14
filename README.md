@@ -73,9 +73,6 @@ Follow the directions at Shawn Graham, Scott Weingart, and Ian Milligan, "Gettin
 Before installing TOPCAT, you need:
 
 - **conda or miniconda**: If you don't have conda installed, install [miniconda](https://docs.conda.io/projects/miniconda/en/latest/index.html#quick-command-line-install) or full [anaconda](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html)
-- **System compiler tools**: Required for building csvfix dependency
-  - **macOS**: Install Xcode command line tools: `xcode-select --install`
-  - **Linux**: Install build-essential package
 
 #### Installation Steps
 
@@ -101,18 +98,7 @@ conda activate topcat
 python -m spacy download en_core_web_sm
 ```
 
-**Step 4: Build csvfix dependency**
-
-```bash
-# Download and build csvfix from source
-curl -L https://github.com/wlbr/csvfix/archive/master.zip -o csvfix.zip
-unzip csvfix.zip
-cd csvfix-master
-make mac  # Use 'make' for Linux
-cd ..
-```
-
-**Step 5: Set up configuration**
+**Step 4: Set up configuration**
 
 ```bash
 # Copy the template configuration file
@@ -121,11 +107,10 @@ cp templates/config_template.ini config.ini
 # Edit config.ini and update these paths for your system:
 #   topcatdir = /path/to/your/topcat/repository (this directory)
 #   malletdir = /path/to/your/mallet/installation  
-#   csvfixdir = /path/to/your/csvfix-master (directory containing bin/)
 #   rootdir = /path/where/analysis/output/will/go
 ```
 
-**Step 6: Validate installation**
+**Step 5: Validate installation**
 
 ```bash
 # Activate the topcat environment and test that everything is working
@@ -145,7 +130,6 @@ TOPCAT uses a Python driver that reads parameters from `config.ini`. The templat
 |-----------|-----------|
 |`topcatdir`|Directory containing this TOPCAT repository|
 |`malletdir`|Directory containing your MALLET installation|
-|`csvfixdir`|Directory containing your csvfix installation (with bin/ subdirectory)|
 |`rootdir`|Directory where analysis output files will be created|
 |`csv`|Full path to your CSV file containing documents to analyze|
 |`textcol`|Column number containing your text documents (1-indexed: first column = 1)|

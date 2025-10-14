@@ -1,0 +1,16 @@
+name: topic_curation
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.9.23
+  - numpy=2.0.2
+  - matplotlib=3.9.2
+  - pip
+  - configargparse
+  - xlsxwriter=3.2.3
+  - pandas
+  - wordcloud
+  - pypdf2=3.0.1
+  - kneed
+  - tqdm

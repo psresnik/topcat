@@ -494,9 +494,92 @@ Based on comprehensive fresh user testing, a complete installation workflow has 
 - **Output validation**: Meaningful topics generated from FDA vaccine comment dataset
 - **Documentation validation**: All installation steps tested and verified
 
+## **Phase 4: CSV Dependency Elimination (2025-10-14)**
+
+### 🎯 **Objective:** Replace csvfix dependency with Python implementation
+
+**Problem**: csvfix was the largest installation barrier requiring:
+- System compiler tools (GCC/Xcode command line tools)  
+- Complex build process (`curl`, `unzip`, `make mac`)
+- Platform-specific compilation issues
+- PATH configuration management
+- Major source of fresh user installation failures
+
+**Solution**: Replace with pure Python implementation using standard library
+
+### ✅ **Implementation Completed:**
+
+#### **1. Python CSV Extraction Function**
+```python
+def extract_csv_column_python(csv_file, column_index, output_file):
+    """Python replacement for csvfix write_dsv -f N"""
+    with open(csv_file, 'r', encoding='utf-8', newline='') as infile:
+        with open(output_file, 'w', encoding='utf-8') as outfile:
+            reader = csv_module.reader(infile)
+            for row in reader:
+                if len(row) > column_index:
+                    outfile.write(row[column_index] + '\n')
+                else:
+                    outfile.write('\n')
+```
+
+#### **2. Configuration Toggle System**
+- **Parameter**: `use_python_csv = true/false`
+- **Default**: `true` (Python method)
+- **Backward compatibility**: csvfix still available if needed
+
+#### **3. Side-by-Side Testing & Validation**
+- **Test script**: `test_csv_extraction.py`
+- **Method**: Byte-for-byte output comparison
+- **Result**: ✅ **Identical output confirmed**
+- **Dataset**: FDA 2K comments (fda_1088_sampled_2K.csv)
+
+```
+✅ SUCCESS: Both methods produce identical output!
+   Safe to switch to Python-only implementation
+```
+
+#### **4. Updated System Components**
+- **driver.py**: Conditional logic supporting both extraction methods
+- **validate_installation.py**: Skip csvfix validation when using Python method
+- **Templates**: Default to Python method (`use_python_csv = true`)
+
+### ✅ **Benefits Achieved:**
+
+#### **Installation Simplification**
+- ❌ **Eliminated**: System compiler requirement (GCC/Xcode)
+- ❌ **Eliminated**: Complex build process (`curl`, `unzip`, `make mac`)
+- ❌ **Eliminated**: Platform-specific build commands  
+- ❌ **Eliminated**: PATH configuration complexity
+- ✅ **Achieved**: Pure Python solution using standard library only
+
+#### **Configuration Simplification**
+- **From**: `csvfixdir` parameter + PATH management
+- **To**: Single boolean toggle `use_python_csv`
+
+#### **User Experience Impact**
+- **Installation steps**: 6 → 5 (17% reduction)
+- **Most complex build step**: Eliminated
+- **Installation time**: Significantly reduced  
+- **Installation failure rate**: Major reduction expected
+
+### ✅ **Testing Documentation:**
+- **Comprehensive testing report**: `CSV_EXTRACTION_TESTING.md`
+- **Test results**: Byte-for-byte identical output verified
+- **Safety validation**: Side-by-side comparison confirmed
+- **Backward compatibility**: Both methods available during transition
+
+### 📋 **Implementation Status:**
+1. ✅ **Python implementation**: Complete and tested
+2. ✅ **Configuration system**: Toggle available for both methods
+3. ✅ **Validation updates**: Conditional csvfix validation
+4. ✅ **Default switched**: Python method now default
+5. ⚡ **Next**: Full csvfix removal (eliminate parameter, validation, documentation)
+
 ### 📋 **Next Steps:**
-1. **Complete Python driver**: Finish implementing `driver.py` to match `driver.csh` functionality
-2. **Test merged environment**: Ensure all curation scripts work with single `topcat` environment
+1. **Monitor Python method**: Validate in production use
+2. **Full csvfix removal**: Remove all csvfix-related code and documentation
+3. **Update installation guides**: Remove csvfix build instructions
 3. **Update configuration**: Add any missing parameters to config template
 4. **Final testing**: Run complete workflow with fresh user setup
 5. **Update README**: Reflect single environment approach
