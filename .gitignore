@@ -1,2 +1,34 @@
+# Generated PDFs
 ./README.pdf
 
+# System files
+.DS_Store
+*/.DS_Store
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Development files
+CLAUDE.md
+Plan.md
+*_LOCAL*
+Old/
+Archive/
+PRODUCTION_READINESS_REPORT.md
+
+# Editor files
+.#*
+*~
+
+# Temporary files
+*.tmp
+*.bak
+
+# Generated outputs (except examples)
+analysis/
+output/
+results/
