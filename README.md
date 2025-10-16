@@ -104,11 +104,10 @@ python -m spacy download en_core_web_sm
 # Copy the template configuration file
 cp templates/config_template.ini config.ini
 
-# Edit config.ini and update these paths for your system:
-#   topcatdir = /path/to/your/topcat/repository (this directory)
-#   malletdir = /path/to/your/mallet/installation  
-#   rootdir = /path/where/analysis/output/will/go
+# Edit config.ini and update relevant variables for your system and analysis
 ```
+
+Note that you can 
 
 **Step 5: Validate installation**
 
@@ -118,11 +117,17 @@ conda activate topcat
 python validate_installation.py
 ```
 
+If you chose a name other than `config.ini` for your local, analysis-specific configuration file, you can call the validation code this way instead:
+
+```bash
+python validate_installation.py --config <your_config_file>
+```
+
 If validation passes, you're ready to use TOPCAT! 
 
 ### Configuration
 
-TOPCAT uses a Python driver that reads parameters from `config.ini`. The template configuration file you copied during installation contains all necessary parameters with detailed comments.
+TOPCAT uses a Python driver that reads parameters from a configuration file (default is `config.ini`). 
 
 **Key parameters you'll typically need to edit:**
 
@@ -134,7 +139,7 @@ TOPCAT uses a Python driver that reads parameters from `config.ini`. The templat
 |`csv`|Full path to your CSV file containing documents to analyze|
 |`textcol`|Column number containing your text documents (1-indexed: first column = 1)|
 |`modelname`|Name for your analysis (used in output filenames)|
-|`granularities`|Topic model sizes to try, e.g. `10 20 30`|
+|`granularities`|Space separated topic model sizes to try, e.g. `10 20 30`|
 
 **Advanced parameters (usually don't need to change):**
 
@@ -148,13 +153,13 @@ TOPCAT uses a Python driver that reads parameters from `config.ini`. The templat
 
 For the `granularities` parameter, choose topic model sizes based on your dataset size. See [Guidance on Topic Model Granularity](#guidance-on-topic-model-granularity) below for recommendations.
 
-**⚠️ Important Note about Re-running Analysis:**
+**⚠️ Important Note about Re-running Analyses:**
 
 When `debug = true` in your configuration file, TOPCAT will automatically overwrite existing model directories from previous runs. This allows for easy re-running during development and testing. However, be aware that:
 
 - Re-running the same analysis will replace all previous results
 - Each topic granularity (10, 20, 30, etc.) has separate directories, so they won't interfere with each other
-- In production use, consider setting `debug = false` to prevent accidental overwrites
+- Consider setting `debug = false` to prevent accidental overwrites
 
 ### Running the driver
 
@@ -179,13 +184,13 @@ python code/driver.py
 
 **What to expect:**
 
-- Processing time: 10-60 minutes depending on dataset size and number of topics
-- Progress indicators: You'll see preprocessing progress and MALLET training updates
+- Processing time: depends on dataset size and number of topics
+- Progress indicators: You'll see preprocessing progress and MALLET progress updates
 - Output: Files will be created in your configured output directory
 
-**Alternative method**: The original shell script is still available: `./code/driver.csh` 
 
-### What the driver produces
+
+### What the automatic processing produces
 
 In the OUTDIR directory specified in the driver, you will find one subdirectory per granularity in GRANULARITIES. In each directory you will find the following three files to be used during the human curation process.
 
@@ -197,20 +202,26 @@ In the OUTDIR directory specified in the driver, you will find one subdirectory 
 
 ### Example run
 
-The default `config.ini` (created from the template) is configured to run on the provided example dataset. This dataset contains 2000 public comments submitted to the U.S. Food and Drug Administration (FDA) in response to a 2021 request for public comments about emergency use authorization for a child COVID-19 vaccine. 
+In the `example` directory, you'll find a smaller (2K documents) dataset and a larger (10K documents) dataset sampled from [public comments](https://www.regulations.gov/docket/FDA-2021-N-1088) that were submitted to the U.S. Food and Drug Administration (FDA) in response to a 2021 [request for public comments](https://downloads.regulations.gov/FDA-2021-N-1088-0001/content.pdf) about emergency use authorization for a child COVID-19 vaccine.  Note that some comments can contain upsetting language.
+
+(Some research using these broader public comments was published in Alexander Hoyle, Rupak Sarkar, Pranav Goel, and Philip Resnik. 2023. [Natural Language Decompositions of Implicit Content Enable Better Text Representations](https://aclanthology.org/2023.emnlp-main.815/). In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing, pages 13188–13214, Singapore. Association for Computational Linguistics. However, note that neither of these datasets exactly match the data used in that paper.)
+
+
+By default (as specified in `templates/config.ini` the configuration will run on the 10K dataset. You can also modify your config to use the 2K dataset instead.
 
 **To run the example:**
+
 ```bash
 python code/driver.py --config config.ini
 # or simply (config.ini is the default):
 python code/driver.py
 ```
 
-This will process the example dataset and create topic models with 10, 20, and 30 topics (as specified in the default configuration).
+This will process the example dataset and create topic models with granularities of 10, 20, and 30 topics (as specified in the default configuration).
 
 **Expected outputs:**
 
-- **Processing time**: ~15-30 minutes for the example dataset
+- **Processing time**: ~5 minutes for the 10K example dataset on a 2021 M1 Mac
 - **Output location**: In your configured output directory (default: `analysis/out/`)
 - **Files created**: Excel files and PDF word clouds for human curation
 

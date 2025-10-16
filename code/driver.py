@@ -8,9 +8,7 @@ import csv as csv_module
 
 def extract_csv_column_python(csv_file, column_index, output_file):
     """
-    Python replacement for csvfix write_dsv -f N
     Extracts column N from CSV file and outputs each value on separate line
-    Includes header to match csvfix behavior exactly
     """
     with open(csv_file, 'r', encoding='utf-8', newline='') as infile:
         with open(output_file, 'w', encoding='utf-8') as outfile:
@@ -31,7 +29,7 @@ def load_config(config_file):
     global malletdir, topcatdir, preproc, runmallet
     global rootdir, csv, textcol, modelname, datadir, outdir, granularities
     global workdir, rawdocs, preprocdir, stoplist, numiterations, maxdocs, seed
-    global debug, dry_run, use_python_csv
+    global debug, dry_run
     
     # Parse config file
     config = configparser.ConfigParser()
@@ -49,12 +47,8 @@ def load_config(config_file):
     else:
         print("NOT IN DEBUGGING MODE")
     
-    # Check CSV extraction method
-    use_python_csv = config.getboolean('variables', 'use_python_csv')
-    if (use_python_csv):
-        print("Using Python CSV extraction (no csvfix dependency)")
-    else:
-        print("Using csvfix for CSV extraction")
+    # Using Python CSV extraction (no external dependencies)
+    print("Using Python CSV extraction (no external dependencies required)")
     
     # Load installation variables
     malletdir = config.get('variables', 'malletdir')
@@ -88,13 +82,6 @@ def load_config(config_file):
     maxdocs       = config.get('variables', 'maxdocs')
     seed          = config.get('variables', 'seed')
 
-    # Add csvfix binary directory to PATH
-    csvfixdir = config.get('variables', 'csvfixdir')
-    csvfix_path = os.path.join(csvfixdir, "bin")
-    if os.path.exists(csvfix_path):
-        os.environ["PATH"] += os.pathsep + csvfix_path
-    else:
-        print(f"Warning: csvfix binary directory not found at {csvfix_path}")
 
 
 
@@ -112,8 +99,7 @@ def extract_text():
     if dry_run:
         print(f"[DRY RUN] Would create workdir: {workdir}")
         print(f"[DRY RUN] Would clean CSV lines using: {os.path.join(topcatdir, 'code/src/csv_clean_lines.py')}")
-        extraction_method = "Python CSV module" if use_python_csv else "csvfix"
-        print(f"[DRY RUN] Would extract column {textcol} from CSV using {extraction_method}")
+        print(f"[DRY RUN] Would extract column {textcol} from CSV using Python CSV module")
         print(f"[DRY RUN] Would create output file: {rawdocs}")
         return
 
@@ -128,24 +114,15 @@ def extract_text():
         with open(temp_clean, 'w') as output_file:
             subprocess.run(["python", csv_clean_script], stdin=input_file, stdout=output_file, check=True)
     
-    # Extract text column using either csvfix or Python
-    if use_python_csv:
-        # Use Python CSV extraction
-        temp_extracted = os.path.join(workdir, "temp_extracted.txt")
-        extract_csv_column_python(temp_clean, int(textcol) - 1, temp_extracted)  # Convert to 0-based indexing
-        
-        with open(temp_extracted, 'r') as input_file:
-            lines = input_file.read().split('\n')
-        os.remove(temp_extracted)
-    else:
-        # Use csvfix extraction  
-        cmd = [
-            "csvfix", "write_dsv", "-f", str(textcol), temp_clean
-        ]
-        p1 = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        lines = p1.stdout.split('\n')
+    # Extract text column using Python CSV module
+    temp_extracted = os.path.join(workdir, "temp_extracted.txt")
+    extract_csv_column_python(temp_clean, int(textcol) - 1, temp_extracted)  # Convert to 0-based indexing
     
-    # Filter empty lines and skip first line (header) - same for both methods
+    with open(temp_extracted, 'r') as input_file:
+        lines = input_file.read().split('\n')
+    os.remove(temp_extracted)
+    
+    # Filter empty lines and skip first line (header)
     with open(rawdocs, 'w') as output_file:
         filtered_lines = [line for line in lines[1:] if line.strip()]
         output_file.write('\n'.join(filtered_lines))

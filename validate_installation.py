@@ -6,7 +6,7 @@ This script tests whether TOPCAT has been installed correctly by checking
 all major components:
 - Configuration file setup
 - TOPCAT conda environment  
-- External dependencies (MALLET, csvfix)
+- External dependencies (MALLET)
 - NLP preprocessing libraries
 - Required Python packages
 
@@ -19,6 +19,10 @@ import subprocess
 import configparser
 import argparse
 from pathlib import Path
+
+# Which example data file to look for
+example = "fda_1088_sampled_10K.csv"
+
 
 def print_status(message, status="INFO"):
     """Print status message with formatting"""
@@ -73,14 +77,8 @@ def main():
         
         malletdir = config.get('variables', 'malletdir') 
         topcatdir = config.get('variables', 'topcatdir')
-        csvfixdir = config.get('variables', 'csvfixdir')
-        use_python_csv = config.getboolean('variables', 'use_python_csv')
         
         print_status(f"Configuration loaded from {config_file}")
-        if use_python_csv:
-            print_status("Using Python CSV extraction (no csvfix required)")
-        else:
-            print_status("Using csvfix for CSV extraction")
         
     except Exception as e:
         print_status(f"Configuration file error: {str(e)}", "FAIL")
@@ -94,13 +92,6 @@ def main():
     if not check_file_exists(mallet_bin, "MALLET binary"):
         all_checks_passed = False
     
-    # Check csvfix (only if using csvfix extraction)
-    if not use_python_csv:
-        csvfix_bin = os.path.join(csvfixdir, "bin", "csvfix") 
-        if not check_file_exists(csvfix_bin, "csvfix binary"):
-            all_checks_passed = False
-    else:
-        print_status("csvfix validation skipped (using Python CSV extraction)", "PASS")
     
     # Check TOPCAT source files
     preprocessing_script = os.path.join(topcatdir, "code", "src", "preprocessing_en.py")
@@ -112,7 +103,7 @@ def main():
         all_checks_passed = False
     
     # Check example dataset
-    example_csv = os.path.join(topcatdir, "example", "fda_1088_sampled_2K.csv")
+    example_csv = os.path.join(topcatdir, "example", example)
     if not check_file_exists(example_csv, "Example dataset"):
         all_checks_passed = False
     
@@ -161,13 +152,6 @@ def main():
     if not run_command(mallet_test, "MALLET command", check_return_code=False):
         all_checks_passed = False
     
-    # Test csvfix (only if using csvfix extraction)
-    if not use_python_csv:
-        csvfix_test = f"{csvfix_bin} help"
-        if not run_command(csvfix_test, "csvfix command", check_return_code=False):
-            all_checks_passed = False
-    else:
-        print_status("csvfix functional test skipped (using Python CSV extraction)", "PASS")
     
     print("\n" + "="*60)
     print("VALIDATION RESULTS")
@@ -177,7 +161,7 @@ def main():
         print_status("All validation tests PASSED!", "PASS")
         print("\nYour TOPCAT installation appears to be working correctly.")
         print(f"You can now run: python code/driver.py --config {config_file}")
-        print("\nExpected processing time: 10 minutes for example dataset")
+        print("\nExpected processing time: <5 minutes for example dataset")
         print("Expected output: Files in your configured output directory")
         return True
     else:
