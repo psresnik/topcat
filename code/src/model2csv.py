@@ -6,9 +6,9 @@
 #  Example for Scholar:
 #    python model2csv.py
 #    --package   scholar
-#    --docfile   /Users/resnik/Misc/projects/rapid2020_nsf/modeling/real_world_worry/inputs/rwwd-train.jsonlist
-#    --modeldir  /Users/resnik/Misc/projects/rapid2020_nsf/modeling/real_world_worry/vanilla_scholar_10topics/
-#    --vocabfile /Users/resnik/Misc/projects/rapid2020_nsf/modeling/real_world_worry/vanilla_scholar_10topics/vocab.json
+#    --docfile   /path/to/documents.jsonlist
+#    --modeldir  /path/to/scholar_model_output/
+#    --vocabfile /path/to/scholar_model_output/vocab.json
 #
 #  Example for Segan:
 #    python model2csv.py
@@ -21,9 +21,9 @@
 #  Example for Mallet:
 #    python model2csv.py
 #    --package   mallet
-#    --docfile   /Users/resnik/misc/projects/covid_premier_analysis/processed_data/premier_icds_fold_0.txt
-#    --modeldir  /Users/resnik/misc/projects/covid_premier_analysis/mallet_work/fold_0.k25
-#    --vocabfile /Users/resnik/misc/projects/covid_premier_analysis/mallet_work/fold_0.k25/fold_0.k25.word-topic-counts
+#    --docfile   /path/to/preprocessed_documents.txt
+#    --modeldir  /path/to/mallet_model_output/
+#    --vocabfile /path/to/mallet_model_output/model.word-topic-counts
 #
 ################################################################
 from traceback_with_variables import activate_by_import
@@ -150,9 +150,9 @@ def convert_segan(modeldir, docfile, vocabfile, word_topics_file, docinfo_file):
 #  Example for Mallet:
 #    python model2csv.py
 #    --package   mallet
-#    --docfile   /Users/resnik/misc/projects/covid_premier_analysis/processed_data/premier_icds_fold_0.txt
-#    --modeldir  /Users/resnik/misc/projects/covid_premier_analysis/mallet_work/fold_0.k25
-#    --vocabfile /Users/resnik/misc/projects/covid_premier_analysis/mallet_work/fold_0.k25/fold_0.k25.word-topic-counts
+#    --docfile   /path/to/preprocessed_documents.txt
+#    --modeldir  /path/to/mallet_model_output/
+#    --vocabfile /path/to/mallet_model_output/model.word-topic-counts
 #    --modelname fold_0.k25
 
 def convert_mallet(modeldir, docfile, vocabfile, word_topics_file, document_topics_file, modelname):

@@ -13,7 +13,7 @@
 #   Note: If you encounter encoding errors, try using
 #   'iconv -f windows-1252 -t utf-8 -c' on the offending file.
 #
-#   Author: Philip Resnik (resnik@umd.edu)
+#   Author: Philip Resnik
 #   
 ################################################################
 # Next line can be deleted if you prefer normal python error traceback
@@ -26,12 +26,13 @@ import sys
 import pandas as pd
 
 ################################################################
-# Default values. Change these for your local installation.
+# Default values. Edit for your local installation if needed.
+# NOTE: These defaults are typically overridden by driver.py parameters.
 ################################################################
-default_mallet_bin           =  '/Users/resnik/misc/pkg/mallet/mallet-git/Mallet/bin'
-default_stoplist             =  '/Users/resnik/misc/pkg/mallet/mallet-git/Mallet/stoplists/en.txt'
-default_preprocessing        =  '/Users/resnik/misc/projects/rapid2020_nsf/modeling/preprocessing.py'
-default_model2csv            =  '/Users/resnik/Misc/pkg/scholar_clip/scholar/utils/model2csv.py'
+default_mallet_bin           =  '/path/to/mallet/bin'
+default_stoplist             =  '/path/to/mallet/stoplists/en.txt'
+default_preprocessing        =  './preprocessing_en.py'
+default_model2csv            =  './model2csv.py'
 default_word_topics_file     =  './word_topics.csv'
 default_document_topics_file =  './document_topics.csv'
 default_optimize_interval    =  10

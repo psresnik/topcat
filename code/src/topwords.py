@@ -174,7 +174,7 @@ for label in tqdm(labels):
     # Skip topic if generate an image for it has problems. (Debug in future!)
     freqs           = generate_topic_cloud_frequencies(sorted_df, label, numwords)
     try:
-        # Create  /Users/resnik/Misc/pkg/scholar_clip/scholar/utils/topwords.pyimage file with cloud
+        # Create image file with cloud
         # sys.stderr.write("Creating cloud image for {} in {}.\n".format(label,temp_file_name))
         generate_topic_cloud_image(freqs, temp_file_name)
 
