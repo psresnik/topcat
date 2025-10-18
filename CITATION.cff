@@ -42,7 +42,7 @@ keywords:
 license: Apache-2.0
 preferred-citation:
   type: conference-paper
-  title: "TOPCAT: Topic-Oriented Protocol for Content Analysis of Text – A Preliminary Study"
+  title: "TOPCAT: Topic-Oriented Protocol for Content Analysis of Text – A Preliminary Study [Poster]"
   authors:
     - family-names: Resnik
       given-names: Philip
@@ -71,7 +71,7 @@ preferred-citation:
       given-names: Dirk
     - family-names: Keith
       given-names: Katherine
-  collection-title: "Proceedings of the Sixth Workshop on Natural Language Processing and Computational Social Science (NLP+CSS 2024)"
+  collection-title: "Sixth Workshop on Natural Language Processing and Computational Social Science (NLP+CSS 2024)"
   year: 2024
   month: 6
   publisher:
