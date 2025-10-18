@@ -1,0 +1,110 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Topic-Oriented Protocol for Content Analysis of Text
+  (TOPCAT)
+message: >-
+  There is not yet a formal publication to cite for TOPCAT.
+  For now, please cite this software using the metadata from
+  "preferred-citation".
+type: software
+authors:
+  - given-names: Philip
+    family-names: Resnik
+    email: psresnik@gmail.com
+    affiliation: University of Maryland
+    orcid: 'https://orcid.org/0000-0002-6130-8602'
+repository-code: 'https://github.com/psresnik/topcat'
+abstract: >-
+  TOPCAT (Topic-Oriented Protocol for Content Analysis of
+  Text) is a software-supported process for
+  computer-assisted qualitative content analysis. It can
+  dramatically reduce the level of effort needed to do a
+  large-scale analysis of text items to develop
+  codes/categories, while at the same time maintaining
+  human-level quality.  The automated analysis in TOPCAT
+  combines state of the art natural language preprocessing
+  with MALLET, an approach for discovering topical
+  categories in text with a decades-long track record of
+  success and,  notably, without notable pitfalls of large
+  language models such as privacy risk (if you use a
+  commercial API), lack of transparency into what the method
+  is actually doing, computational expense, prompt
+  sensitivity, model instability, and questionable alignment
+  with human categories.
+keywords:
+  - Qualitative content analysis
+  - QCA
+  - Topic models
+  - Natural language processing
+license: Apache-2.0
+preferred-citation:
+  type: conference-paper
+  title: "TOPCAT: Topic-Oriented Protocol for Content Analysis of Text – A Preliminary Study"
+  authors:
+    - family-names: Resnik
+      given-names: Philip
+    - family-names: Ma
+      given-names: Bolei
+    - family-names: Hoyle
+      given-names: Alexander
+    - family-names: Goel
+      given-names: Pranav
+    - family-names: Sarkar
+      given-names: Rupak
+    - family-names: Gearing
+      given-names: Maeve
+    - family-names: Bruce
+      given-names: Carol
+    - family-names: Haensch
+      given-names: Anna-Carolina
+    - family-names: Kreuter
+      given-names: Frauke
+  editors:
+    - family-names: Card
+      given-names: Dallas
+    - family-names: Field
+      given-names: Anjalie
+    - family-names: Hovy
+      given-names: Dirk
+    - family-names: Keith
+      given-names: Katherine
+  collection-title: "Proceedings of the Sixth Workshop on Natural Language Processing and Computational Social Science (NLP+CSS 2024)"
+  year: 2024
+  month: 6
+  publisher:
+    name: "Association for Computational Linguistics"
+  url: "https://aclanthology.org/2024.nlpcss-1.0/"
+
+references:
+  - type: conference-paper
+    title: "Are Neural Topic Models Broken?"
+    authors:
+      - family-names: Hoyle
+        given-names: Alexander Miserlis
+      - family-names: Sarkar
+        given-names: Rupak
+      - family-names: Goel
+        given-names: Pranav
+      - family-names: Resnik
+        given-names: Philip
+    editors:
+      - family-names: Goldberg
+        given-names: Yoav
+      - family-names: Kozareva
+        given-names: Zornitsa
+      - family-names: Zhang
+        given-names: Yue
+    collection-title: "Findings of the Association for Computational Linguistics: EMNLP 2022"
+    year: 2022
+    month: 12
+    publisher:
+      name: "Association for Computational Linguistics"
+    url: "https://aclanthology.org/2022.findings-emnlp.390/"
+    identifiers:
+      - type: doi
+        value: "10.18653/v1/2022.findings-emnlp.390"
+    start: 5321
+    end: 5344
