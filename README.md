@@ -2,11 +2,7 @@
 
 ## Table of Contents
 
-<!--
-
 - [Citation](#citation)
-- [Overview](#overview)
--->
 
 - [The software](#the-software)
   - [Installing MALLET](#installing-mallet)
@@ -16,46 +12,31 @@
   - [Running the driver](#running-the-driver)
   - [What the driver produces](#what-the-driver-produces)
   - [Example run](#example-run)
+  
 - [The human process](#the-human-process)
   - [Selecting a model as the starting point for human curation](#selecting-a-model-as-the-starting-point-for-human-curation)
   - [Curating the model to build a coding scheme](#curating-the-model-to-build-a-coding-scheme)
   - [Obtaining representative documents ("verbatims") for a code](#obtaining-representative-documents-verbatims-for-a-code)
 - [Guidance on topic model granularity](#guidance-on-topic-model-granularity)
 
-<!--
- ## Citation
+
+## Citation
  
-  If you use TOPCAT, kindly make sure to cite the following in any reports, presentations, or publications:
- 
- * Stub for citation
- 
- ## Overview
- 
-  Qualitative content analysis (QCA) includes a body of techniques that researchers use in order to gain an understanding of the content in bodies of text. These techniques are applied   across a wide variety of use cases, including, for example, the analysis of open-ended survey responses, social media posts, or online reviews. A widely acknowledged problem with   QCA, however, is that its methods are extremely labor intensive. For example, open-ended text responses can be an incredibly valuable source of insight in survey research, providing   more nuance than traditional questions and revealing categories of response that were not originally expected, but survey researchers frequently avoid open-ends because the   analysis represents too great an investment of resources. And when dealing with large quantities of text data, traditional QCA on the full dataset is simply out of the question.
- 
-  Topic models such as Latent Dirichlet Allocation (LDA; [Blei et al. 2003](https://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf)) were introduced in the early 2000s as an 
-  automated method for discovery of categories in bodies of text, and these models are cost-effective, highly scalable, and transparent in terms of offering a clear understanding how the 
-  underlying model works. However, the specifics of their use in practice are wildly variable and many practitioners are unsatisfied with their ability to produce sufficiently high quality results.
- 
-  TOPCAT is a (still-evolving) software-enabled process for combining the positive aspects of automated topic modeling with the benefits of manual content analysis. A variety of 
-  human-centered processes have been built around topic modeling over the years (e.g. interactive topic models; CITE) but TOPCAT is the first to be designed entirely around the traditional 
-  qualitative content analysis process with the goal of widespread utility for qual researchers.  With that in mind:
- 
- * **TOPCAT has been validated.** See [CITATION] for a direct comparison of the TOPCAT process with traditional, fully manual qualitative content analysis. 
- 
- * **TOPCAT's human curation protocol follows a typical qual paradigm.** The  analysts' role should feel pretty familiar for experienced qual researchers. (We thought of just calling this 
-  Computer Assisted Content Analysis, but we didn't like the sound of the acronym!) The central part of the human process is designed to closely match traditional coding scheme 
-  development, with the outcome of the process comprising a traditional coding scheme (a set of code labels and their descriptions) together with a first-pass automatic coding of the   dataset that can subsequently be refined manually if desired. (Higher quality automated coding is under development.)
- 
- * **TOPCAT uses [MALLET](https://mimno.github.io/Mallet/index), the most mature and widely used topic modeling package.** An excellent set of instructions for installing   and running MALLET (both Mac and Windows), friendly to non-technical people, already exists [here](https://programminghistorian.org/en/lessons/topic-modeling-and-mallet).
- 
- * **TOPCAT's software is straightforward to install and use for anyone who is capable of running a Python program.**  Currently for Mac, but instructions for Windows are coming. 
-   - TOPCAT provides a Python driver (`code/driver.py`) that orchestrates the complete analysis workflow with a single command.
- 
- * **TOPCAT does not require learning a new software interface.** Qualitative analysts need only be able to deal with PDF and Excel.
- 
- * **TOPCAT is extensible.** The human curation protocol requires only a topic-word distribution and a document-topic distribution (the standard outputs of "vanilla" topic modeling   using LDA), either as CSV or .npy files. These should also be straightforward to obtain from other models such as the [Structural Topic Model](https://www.structuraltopicmodel.com/) or [short text topic models](https://stackoverflow.com/questions/62175452/topic-modeling-on-short-texts-python). 
---> 
+An up to date publication for TOPCAT is in preparation. In the meantime, if you use TOPCAT, kindly make sure to cite the following in any reports, presentations, or publications:
+  
+```
+@misc{Resnik_TOPCAT_Topic-Oriented_Protocol_2024,
+  author = {Resnik, Philip and Ma, Bolei and Hoyle, Alexander and Goel, Pranav and Sarkar, Rupak and Gearing, Maeve and Bruce, Carol and Haensch, Anna-Carolina and Kreuter, Frauke},
+  booktitle = {Sixth Workshop on Natural Language Processing and Computational Social Science (NLP+CSS 2024)},
+  editor = {Card, Dallas and Field, Anjalie and Hovy, Dirk and Keith, Katherine},
+  month = jun,
+  publisher = {Association for Computational Linguistics},
+  title = {{TOPCAT: Topic-Oriented Protocol for Content Analysis of Text – A Preliminary Study}},
+  url = {https://aclanthology.org/2024.nlpcss-1.0/},
+  note = "Poster",
+  year = {2024}
+}
+```
  
  
 ## The software
