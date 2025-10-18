@@ -41,7 +41,7 @@ keywords:
   - Natural language processing
 license: Apache-2.0
 preferred-citation:
-  type: conference-paper
+  type: unpublished
   title: "TOPCAT: Topic-Oriented Protocol for Content Analysis of Text – A Preliminary Study [Poster]"
   authors:
     - family-names: Resnik
