@@ -20,7 +20,6 @@
   - [Selecting a model as the starting point for human curation](#selecting-a-model-as-the-starting-point-for-human-curation)
   - [Curating the model to build a coding scheme](#curating-the-model-to-build-a-coding-scheme)
   - [Obtaining representative documents ("verbatims") for a code](#obtaining-representative-documents-verbatims-for-a-code)
-  - [Coding the dataset](#coding-the-dataset)
 - [Guidance on topic model granularity](#guidance-on-topic-model-granularity)
 
 <!--
@@ -259,6 +258,7 @@ The end result of this curation process is a set of categories and descriptions 
 
 It is often useful to select a set of good examples for codes in a coding scheme. This is straightforward using the files already created by the TOPCAT process.  In the materials used for human curation, each automatically created topic was accompanied by a set of its "top" documents.  These can be considered a set of ranked candidates for verbatims for the code created using that topic.
 
+<!--
 ### Coding the dataset  
 
 The TOPCAT protocol is currently designed for high-quality, efficient development of a coding scheme, not for automatically coding documents. Automated coding is an active subject of current research, e.g. see:
@@ -297,6 +297,7 @@ However, even without such fancier approaches the output of the TOPCAT process d
 Voila!  You now have a spreadsheet containing the text, and for each code, a column containing either 0 or 1 depending on whether that code applies to that text item.
 
 *To consider: provide instructions for importing the model-based coding into NVivo for review/correction?*
+-->
 
 ## Guidance on topic model granularity
 
