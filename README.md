@@ -160,6 +160,9 @@ python code/driver.py --dry-run --config config.ini
 python code/driver.py --config config.ini
 # or simply (config.ini is the default):
 python code/driver.py
+
+# Safety option: exit if output directories already exist
+python code/driver.py --output-safe --config config.ini
 ```
 
 **What to expect:**
@@ -167,6 +170,10 @@ python code/driver.py
 - Processing time: depends on dataset size and number of topics
 - Progress indicators: You'll see preprocessing progress and MALLET progress updates
 - Output: Files will be created in your configured output directory
+
+**Safety options:**
+- `--output-safe`: Exit if output directories already exist (safer behavior for production runs)
+- Default behavior: Will overwrite existing directories in debug mode, exit in production mode
 
 
 

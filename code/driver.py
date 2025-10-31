@@ -22,7 +22,7 @@ def extract_csv_column_python(csv_file, column_index, output_file):
                     # Handle case where row doesn't have enough columns
                     outfile.write('\n')
 
-def load_config(config_file):
+def load_config(config_file, output_safe=False):
 
     # Declare parameters as global
     # Yes, this is ugly! I'm being quick and dirty.
@@ -66,10 +66,19 @@ def load_config(config_file):
     granularities = config.get('variables', 'granularities')
 
     # Check if output directories already exist to avoid overwriting
-    if os.path.isdir(outdir) and not debug:
+    # Only exit if output_safe is True OR debug is False (current behavior when output_safe=False)
+    if output_safe and os.path.isdir(outdir):
+        print(f"Output directory {outdir} already exists. Exiting (use --output-safe=false to overwrite).")
+        sys.exit(1)
+    if output_safe and os.path.isdir(datadir):
+        print(f"Output directory {datadir} already exists. Exiting (use --output-safe=false to overwrite).")
+        sys.exit(1)
+    
+    # Legacy behavior: exit if directories exist and not in debug mode (when output_safe=False)
+    if not output_safe and os.path.isdir(outdir) and not debug:
         print(f"Output directory {outdir} already exists. Exiting.")
         sys.exit(1)
-    if os.path.isdir(datadir) and not debug:
+    if not output_safe and os.path.isdir(datadir) and not debug:
         print(f"Output directory {datadir} already exists. Exiting.")
         sys.exit(1)
         
@@ -268,13 +277,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='TOPCAT: Topic-Oriented Protocol for Content Analysis of Text')
     parser.add_argument('--config', default='./config.ini', help='Configuration file path')
     parser.add_argument('--dry-run', action='store_true', help='Show what would be done without actually running')
+    parser.add_argument('--output-safe', action='store_true', help='Exit if output directories exist (safer behavior, default is false)')
     args = parser.parse_args()
     
     # Set global dry_run flag
     dry_run = args.dry_run
     
     # Load configuration
-    load_config(args.config)
+    load_config(args.config, args.output_safe)
 
     if dry_run:
         print("🧪 DRY RUN MODE - showing what would be done without executing")
